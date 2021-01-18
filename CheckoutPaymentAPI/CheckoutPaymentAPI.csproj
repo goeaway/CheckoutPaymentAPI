@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CheckoutPaymentAPI.Core\CheckoutPaymentAPI.Core.csproj" />
+    <ProjectReference Include="..\CheckoutPaymentAPI.Persistence\CheckoutPaymentAPI.Persistence.csproj" />
   </ItemGroup>
 
 

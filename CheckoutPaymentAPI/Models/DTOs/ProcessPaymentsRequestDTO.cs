@@ -7,5 +7,6 @@ namespace CheckoutPaymentAPI.Models.DTOs
 {
     public class ProcessPaymentsRequestDTO
     {
+
     }
 }

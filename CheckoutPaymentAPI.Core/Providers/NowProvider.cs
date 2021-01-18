@@ -9,5 +9,15 @@ namespace CheckoutPaymentAPI.Core.Providers
     {
         private readonly DateTime? _now;
         public DateTime Now => _now ?? DateTime.Now;
+
+        public NowProvider()
+        {
+
+        }
+
+        public NowProvider(DateTime now)
+        {
+            _now = now;
+        }
     }
 }

@@ -5,5 +5,6 @@ namespace CheckoutPaymentAPI.Requests.Queries.GetPaymentDetails
 {
     public class GetPaymentDetailsRequest : IRequest<GetPaymentDetailsResponseDTO>
     {
+        public int PaymentId { get; set; }
     }
 }
