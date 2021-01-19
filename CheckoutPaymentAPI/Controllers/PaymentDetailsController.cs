@@ -20,10 +20,10 @@ namespace CheckoutPaymentAPI.Controllers
             _mediator = mediator;
         }
         
-        [HttpGet]
-        public Task<GetPaymentDetailsResponseDTO> GetPaymentDetails(string identifier)
+        [HttpGet("{identifier}")]
+        public Task<GetPaymentDetailsResponseDTO> GetPaymentDetails(int identifier)
         {
-            return _mediator.Send(new GetPaymentDetailsRequest());
+            return _mediator.Send(new GetPaymentDetailsRequest { PaymentId = identifier });
         }
     }
 }

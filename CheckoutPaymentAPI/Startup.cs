@@ -7,6 +7,7 @@ using CheckoutPaymentAPI.Behaviours;
 using CheckoutPaymentAPI.Core.Abstractions;
 using CheckoutPaymentAPI.Core.Providers;
 using CheckoutPaymentAPI.Exceptions;
+using CheckoutPaymentAPI.Models.DTOs;
 using CheckoutPaymentAPI.Persistence;
 using CheckoutPaymentAPI.Requests.Commands.ProcessPayment;
 using FluentValidation.AspNetCore;
@@ -84,25 +85,22 @@ namespace CheckoutPaymentAPI
                 var logger = app.ApplicationServices.GetService<ILogger>();
                 logger.Error(exception, "Error occurred when processing request {uri}", uri);
 
-                var errorList = new List<string> { exception.Message, exception.StackTrace };
-
-                if (exception.InnerException != null)
-                {
-                    errorList.Add(exception.InnerException.Message);
-                }
+                var errorResponse = new ErrorResponseDTO();
 
                 if (exception is RequestValidationFailedException)
                 {
                     ctx.Response.StatusCode = 400;
-                    errorList.AddRange((exception as RequestValidationFailedException).Failures.Select(f => f.ErrorMessage));
+                    errorResponse.Message = "Validation error";
+                    errorResponse.Errors.AddRange((exception as RequestValidationFailedException).Failures.Select(f => f.ErrorMessage));
                 }
                 else if (exception is RequestFailedException)
                 {
                     var requestFailedException = exception as RequestFailedException;
-                    ctx.Response.StatusCode = (int)requestFailedException.Code;
+                    ctx.Response.StatusCode = 400;
+                    errorResponse.Message = requestFailedException.Message;
                 }
 
-                await ctx.Response.WriteAsync(JsonConvert.SerializeObject(errorList));
+                await ctx.Response.WriteAsync(JsonConvert.SerializeObject(errorResponse));
             });
         }
     }

@@ -20,7 +20,7 @@ namespace CheckoutPaymentAPI.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost]
+        [HttpPost("process")]
         public Task<ProcessPaymentResponseDTO> Process(ProcessPaymentsRequestDTO dto)
         {
             return _mediator.Send(new ProcessPaymentRequest());

@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30523.141
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckoutPaymentAPI", "CheckoutPaymentAPI\CheckoutPaymentAPI.csproj", "{FF1EB2C9-79DD-4166-A200-A4DF7521B9A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI", "CheckoutPaymentAPI\CheckoutPaymentAPI.csproj", "{FF1EB2C9-79DD-4166-A200-A4DF7521B9A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckoutPaymentAPI.Tests", "CheckoutPaymentAPI.Tests\CheckoutPaymentAPI.Tests.csproj", "{7BF67BC8-5EF7-4C8C-BEBC-4CC36AB5D7CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI.Tests", "CheckoutPaymentAPI.Tests\CheckoutPaymentAPI.Tests.csproj", "{7BF67BC8-5EF7-4C8C-BEBC-4CC36AB5D7CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckoutPaymentAPI.Core", "CheckoutPaymentAPI.Core\CheckoutPaymentAPI.Core.csproj", "{B551E0A9-8AB9-4297-A6EF-96DFFD03F757}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI.Core", "CheckoutPaymentAPI.Core\CheckoutPaymentAPI.Core.csproj", "{B551E0A9-8AB9-4297-A6EF-96DFFD03F757}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckoutPaymentAPI.Persistence", "CheckoutPaymentAPI.Persistence\CheckoutPaymentAPI.Persistence.csproj", "{65E29BAB-FABF-41F6-9245-C06566947B10}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI.Persistence", "CheckoutPaymentAPI.Persistence\CheckoutPaymentAPI.Persistence.csproj", "{65E29BAB-FABF-41F6-9245-C06566947B10}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckoutPaymentAPI.IntegrationTests", "CheckoutPaymentAPI.IntegrationTests\CheckoutPaymentAPI.IntegrationTests.csproj", "{7853FAC5-BA90-46BE-A317-400F7B5BC36A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{65E29BAB-FABF-41F6-9245-C06566947B10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65E29BAB-FABF-41F6-9245-C06566947B10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65E29BAB-FABF-41F6-9245-C06566947B10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7853FAC5-BA90-46BE-A317-400F7B5BC36A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7853FAC5-BA90-46BE-A317-400F7B5BC36A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7853FAC5-BA90-46BE-A317-400F7B5BC36A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7853FAC5-BA90-46BE-A317-400F7B5BC36A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
