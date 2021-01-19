@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using CheckoutPaymentAPI.Behaviours;
+using CheckoutPaymentAPI.Core;
 using CheckoutPaymentAPI.Core.Abstractions;
 using CheckoutPaymentAPI.Core.Providers;
 using CheckoutPaymentAPI.Exceptions;
@@ -39,11 +40,15 @@ namespace CheckoutPaymentAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers().AddFluentValidation();
+            services.AddControllers().AddFluentValidation(fv =>
+            {
+                fv.RegisterValidatorsFromAssemblyContaining<ProcessPaymentValidator>();
+            });
 
             services.AddLogger();
             services.AddMediatR(Assembly.GetAssembly(typeof(ProcessPaymentHandler)));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+            services.AddTransient<IAcquiringBank, AcquiringBank>();
 
             services.AddSingleton<INowProvider, NowProvider>();
 

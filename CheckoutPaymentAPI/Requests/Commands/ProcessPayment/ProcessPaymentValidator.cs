@@ -12,7 +12,8 @@ namespace CheckoutPaymentAPI.Requests.Commands.ProcessPayment
         public ProcessPaymentValidator(INowProvider nowProvider)
         {
             RuleFor(x => x.CardNumber)
-                .NotEmpty().WithMessage("Card number required");
+                .NotEmpty().WithMessage("Card number required")
+                .CreditCard().WithMessage("Card number invalid");
 
             RuleFor(x => x.Expiry)
                 .NotEmpty().WithMessage("Expiry required")
