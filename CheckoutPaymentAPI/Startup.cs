@@ -96,7 +96,7 @@ namespace CheckoutPaymentAPI
                 else if (exception is RequestFailedException)
                 {
                     var requestFailedException = exception as RequestFailedException;
-                    ctx.Response.StatusCode = 400;
+                    ctx.Response.StatusCode = (int)requestFailedException.Code;
                     errorResponse.Message = requestFailedException.Message;
                 }
 

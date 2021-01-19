@@ -1,7 +1,7 @@
 ﻿using CheckoutPaymentAPI.Core.Abstractions;
 using CheckoutPaymentAPI.Persistence;
 using CheckoutPaymentAPI.Requests.Commands.ProcessPayment;
-using CheckoutPaymentAPI.Tests.Utilities;
+using CheckoutPaymentAPI.Tests.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;

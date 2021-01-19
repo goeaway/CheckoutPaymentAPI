@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI.Core", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI.Persistence", "CheckoutPaymentAPI.Persistence\CheckoutPaymentAPI.Persistence.csproj", "{65E29BAB-FABF-41F6-9245-C06566947B10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckoutPaymentAPI.IntegrationTests", "CheckoutPaymentAPI.IntegrationTests\CheckoutPaymentAPI.IntegrationTests.csproj", "{7853FAC5-BA90-46BE-A317-400F7B5BC36A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI.IntegrationTests", "CheckoutPaymentAPI.IntegrationTests\CheckoutPaymentAPI.IntegrationTests.csproj", "{7853FAC5-BA90-46BE-A317-400F7B5BC36A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckoutPaymentAPI.Tests.Core", "CheckoutPaymentAPI.Tests.Core\CheckoutPaymentAPI.Tests.Core.csproj", "{D25EDE4B-7617-4996-9269-0DA65F0B3675}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{7853FAC5-BA90-46BE-A317-400F7B5BC36A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7853FAC5-BA90-46BE-A317-400F7B5BC36A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7853FAC5-BA90-46BE-A317-400F7B5BC36A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D25EDE4B-7617-4996-9269-0DA65F0B3675}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D25EDE4B-7617-4996-9269-0DA65F0B3675}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D25EDE4B-7617-4996-9269-0DA65F0B3675}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D25EDE4B-7617-4996-9269-0DA65F0B3675}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

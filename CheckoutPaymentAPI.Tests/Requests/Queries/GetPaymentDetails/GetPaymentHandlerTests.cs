@@ -1,6 +1,10 @@
-﻿using CheckoutPaymentAPI.Requests.Queries.GetPaymentDetails;
-using CheckoutPaymentAPI.Tests.Utilities;
+﻿using CheckoutPaymentAPI.Exceptions;
+using CheckoutPaymentAPI.Persistence;
+using CheckoutPaymentAPI.Persistence.Models;
+using CheckoutPaymentAPI.Requests.Queries.GetPaymentDetails;
+using CheckoutPaymentAPI.Tests.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,47 +25,53 @@ namespace CheckoutPaymentAPI.Tests.Requests.Queries.GetPaymentDetails
                 PaymentId = 1
             };
 
-            using (var context = Setup.CreateContext())
-            {
-                var handler = new GetPaymentDetailsHandler(context);
-                var result = await handler.Handle(request, CancellationToken.None);
-
-                Assert.Fail();
-            }
+            using var context = Setup.CreateContext();
+            var handler = new GetPaymentDetailsHandler(context);
+            await Assert
+                .ThrowsExceptionAsync<RequestFailedException>(
+                    () => handler.Handle(request, CancellationToken.None));
         }
 
         [TestMethod]
-        public async Task Returns_Masked_Details_In_DTO()
+        public async Task Returns_Details_In_DTO()
         {
+            const int PAYMENT_ID = 1;
+            const string CARD_NUMBER = "1234";
+            const string CVV = "123";
+            const string CURRENCY = "GBP";
+            const decimal AMOUNT = .1m;
+            const bool PAYMENT_RESULT = true;
+            var EXPIRY = new DateTime(2021, 01, 01);
+
             var request = new GetPaymentDetailsRequest
             {
-                PaymentId = 1
+                PaymentId = PAYMENT_ID
             };
 
-            using (var context = Setup.CreateContext())
+            using var context = Setup.CreateContext();
+
+            context.ProcessedPayments.Add(new ProcessedPayment
             {
-                var handler = new GetPaymentDetailsHandler(context);
-                var result = await handler.Handle(request, CancellationToken.None);
+                Id = PAYMENT_ID,
+                CardNumber = CARD_NUMBER,
+                Expiry = EXPIRY,
+                Currency = CURRENCY,
+                Amount = AMOUNT,
+                CVV = CVV,
+                PaymentResult = PAYMENT_RESULT
+            });
 
-                Assert.Fail();
-            }
-        }
+            context.SaveChanges();
 
-        [TestMethod]
-        public async Task Returns_Bank_Payment_Result_In_DTO()
-        {
-            var request = new GetPaymentDetailsRequest
-            {
-                PaymentId = 1
-            };
+            var handler = new GetPaymentDetailsHandler(context);
+            var result = await handler.Handle(request, CancellationToken.None);
 
-            using (var context = Setup.CreateContext())
-            {
-                var handler = new GetPaymentDetailsHandler(context);
-                var result = await handler.Handle(request, CancellationToken.None);
-
-                Assert.Fail();
-            }
+            Assert.AreEqual(PAYMENT_RESULT, result.PaymentResult);
+            Assert.AreEqual(CARD_NUMBER, result.CardNumber);
+            Assert.AreEqual(CVV, result.CVV);
+            Assert.AreEqual(EXPIRY, result.Expiry);
+            Assert.AreEqual(CURRENCY, result.Currency);
+            Assert.AreEqual(AMOUNT, result.Amount);
         }
     }
 }

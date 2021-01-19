@@ -1,4 +1,5 @@
 ﻿using CheckoutPaymentAPI.Models.DTOs;
+using CheckoutPaymentAPI.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -9,6 +10,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using CheckoutPaymentAPI.Tests.Core;
+using CheckoutPaymentAPI.Persistence.Models;
 
 namespace CheckoutPaymentAPI.IntegrationTests.Controllers
 {
@@ -16,18 +21,25 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
     [TestCategory("Integration - PaymentDetailsController")]
     public class PaymentDetailsControllerTests
     {
-        private (TestServer server, HttpClient client) Setup()
+        private (TestServer server, HttpClient client, CheckoutPaymentAPIContext context) SetupServer()
         {
-            var server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
+            var context = Setup.CreateContext();
+
+            var server = new TestServer(new WebHostBuilder()
+                .UseStartup<Startup>()
+                .ConfigureServices(services =>
+                {
+                    services.AddSingleton(context);
+                }));
             var client = server.CreateClient();
 
-            return (server, client);
+            return (server, client, context);
         }
 
         [TestMethod]
         public async Task Return_404_For_No_Id()
         {
-            var (_, client) = Setup();
+            var (_, client, _) = SetupServer();
 
             var response = await client.GetAsync("/paymentdetails");
 
@@ -37,23 +49,89 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
         [TestMethod]
         public async Task Return_200_With_Data_For_Successful_Find_And_Payment()
         {
-            var (_, client) = Setup();
+            const int PAYMENT_ID = 1;
+            const decimal AMOUNT = .1m;
+            const string CARD_NUMBER = "123123423543";
+            const string CVV = "123";
+            const string CURRENCY = "GBP";
+            const bool PAYMENT_RESULT = true;
+            var EXPIRY = new DateTime(2021, 01, 01);
 
-            var response = await client.GetAsync("/paymentdetails");
-            response.EnsureSuccessStatusCode();
+            var (_, client, context) = SetupServer();
 
-            // assert data shows the payment was successful
+            using (context)
+            {
+                // add to DB so we can get it back
+                context.ProcessedPayments.Add(new ProcessedPayment
+                {
+                    Id = PAYMENT_ID,
+                    Amount = AMOUNT,
+                    CardNumber = CARD_NUMBER,
+                    CVV = CVV,
+                    Expiry = EXPIRY,
+                    Currency = CURRENCY,
+                    PaymentResult = PAYMENT_RESULT
+                });
+
+                context.SaveChanges();
+
+                var response = await client.GetAsync($"/paymentdetails/{PAYMENT_ID}");
+                response.EnsureSuccessStatusCode();
+
+                var responseData = JsonConvert.DeserializeObject<GetPaymentDetailsResponseDTO>(await response.Content.ReadAsStringAsync());
+
+                // assert data shows the payment was successful
+                Assert.AreEqual(PAYMENT_RESULT, responseData.PaymentResult);
+                Assert.AreEqual(AMOUNT, responseData.Amount);
+                Assert.AreEqual(CURRENCY, responseData.Currency);
+                Assert.AreEqual(CVV, responseData.CVV); // would be masked but that is handled when ADDING to db
+                Assert.AreEqual(CARD_NUMBER, responseData.CardNumber);
+                Assert.AreEqual(EXPIRY, responseData.Expiry);
+            }
         }
 
         [TestMethod]
         public async Task Return_200_With_Data_For_Successful_Find_But_Failed_Payment()
         {
-            var (_, client) = Setup();
+            const int PAYMENT_ID = 1;
+            const decimal AMOUNT = .1m;
+            const string CARD_NUMBER = "123123423543";
+            const string CVV = "123";
+            const string CURRENCY = "GBP";
+            const bool PAYMENT_RESULT = false;
+            var EXPIRY = new DateTime(2021, 01, 01);
 
-            var response = await client.GetAsync("/paymentdetails");
-            response.EnsureSuccessStatusCode();
+            var (_, client, context) = SetupServer();
 
-            // assert data shows the payment was unsuccessful
+            using (context)
+            {
+                // add to DB so we can get it back
+                context.ProcessedPayments.Add(new ProcessedPayment
+                {
+                    Id = PAYMENT_ID,
+                    Amount = AMOUNT,
+                    CardNumber = CARD_NUMBER,
+                    CVV = CVV,
+                    Expiry = EXPIRY,
+                    Currency = CURRENCY,
+                    PaymentResult = PAYMENT_RESULT
+                });
+
+                context.SaveChanges();
+
+                var response = await client.GetAsync($"/paymentdetails/{PAYMENT_ID}");
+                response.EnsureSuccessStatusCode();
+
+                var responseData = JsonConvert.DeserializeObject<GetPaymentDetailsResponseDTO>(await response.Content.ReadAsStringAsync());
+
+                // assert data shows the payment was successful
+                Assert.AreEqual(PAYMENT_RESULT, responseData.PaymentResult);
+                Assert.AreEqual(AMOUNT, responseData.Amount);
+                Assert.AreEqual(CURRENCY, responseData.Currency);
+                Assert.AreEqual(CVV, responseData.CVV); // would be masked but that is handled when ADDING to db
+                Assert.AreEqual(CARD_NUMBER, responseData.CardNumber);
+                Assert.AreEqual(EXPIRY, responseData.Expiry);
+            }
         }
 
         [TestMethod]
@@ -61,7 +139,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
         {
             const int PAYMENT_ID = 1;
 
-            var (_, client) = Setup();
+            var (_, client, _) = SetupServer();
 
             var response = await client.GetAsync($"/paymentdetails/{PAYMENT_ID}");
 

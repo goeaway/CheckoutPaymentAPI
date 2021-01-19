@@ -1,4 +1,5 @@
-﻿using CheckoutPaymentAPI.Models.DTOs;
+﻿using CheckoutPaymentAPI.Exceptions;
+using CheckoutPaymentAPI.Models.DTOs;
 using CheckoutPaymentAPI.Persistence;
 using MediatR;
 using System;
@@ -17,11 +18,27 @@ namespace CheckoutPaymentAPI.Requests.Queries.GetPaymentDetails
         {
             _context = context;
         }
-        public Task<GetPaymentDetailsResponseDTO> Handle(GetPaymentDetailsRequest request, CancellationToken cancellationToken)
+        public async Task<GetPaymentDetailsResponseDTO> Handle(GetPaymentDetailsRequest request, CancellationToken cancellationToken)
         {
-            // query context for details with provided id
-            // throw error if not found (request failed exception probably)
-            throw new NotImplementedException();
+            // try and find payment in context
+            var foundPayment = await _context.ProcessedPayments.FindAsync(request.PaymentId);
+
+            // throw error with message if not found, will be picked up by error handler in startup
+            if(foundPayment == null)
+            {
+                throw new RequestFailedException($"No payment details could be found for id {request.PaymentId}");
+            }
+
+            // could use Automapper here
+            return new GetPaymentDetailsResponseDTO 
+            { 
+                CardNumber = foundPayment.CardNumber,
+                Expiry = foundPayment.Expiry,
+                Currency = foundPayment.Currency,
+                Amount = foundPayment.Amount,
+                CVV = foundPayment.CVV,
+                PaymentResult = foundPayment.PaymentResult
+            };
         }
     }
 }

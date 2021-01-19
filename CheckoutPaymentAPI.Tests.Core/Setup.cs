@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CheckoutPaymentAPI.Tests.Utilities
+namespace CheckoutPaymentAPI.Tests.Core
 {
     public static class Setup
     {

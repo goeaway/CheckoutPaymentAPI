@@ -11,6 +11,8 @@ namespace CheckoutPaymentAPI.Persistence.Models
         public string CVV { get; set; }
         public DateTime Expiry { get; set; }
         public string Currency { get; set; }
+        public decimal Amount { get; set; }
+        public bool PaymentResult { get; set; }
         public DateTime Created { get; set; }
     }
 }
