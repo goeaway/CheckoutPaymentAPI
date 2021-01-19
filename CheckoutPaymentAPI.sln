@@ -5,15 +5,17 @@ VisualStudioVersion = 16.0.30523.141
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI", "CheckoutPaymentAPI\CheckoutPaymentAPI.csproj", "{FF1EB2C9-79DD-4166-A200-A4DF7521B9A8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI.Tests", "CheckoutPaymentAPI.Tests\CheckoutPaymentAPI.Tests.csproj", "{7BF67BC8-5EF7-4C8C-BEBC-4CC36AB5D7CF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI.Tests.Unit", "CheckoutPaymentAPI.Tests.Unit\CheckoutPaymentAPI.Tests.Unit.csproj", "{7BF67BC8-5EF7-4C8C-BEBC-4CC36AB5D7CF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI.Core", "CheckoutPaymentAPI.Core\CheckoutPaymentAPI.Core.csproj", "{B551E0A9-8AB9-4297-A6EF-96DFFD03F757}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI.Persistence", "CheckoutPaymentAPI.Persistence\CheckoutPaymentAPI.Persistence.csproj", "{65E29BAB-FABF-41F6-9245-C06566947B10}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI.IntegrationTests", "CheckoutPaymentAPI.IntegrationTests\CheckoutPaymentAPI.IntegrationTests.csproj", "{7853FAC5-BA90-46BE-A317-400F7B5BC36A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI.Tests.Integration", "CheckoutPaymentAPI.Tests.Integration\CheckoutPaymentAPI.Tests.Integration.csproj", "{7853FAC5-BA90-46BE-A317-400F7B5BC36A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckoutPaymentAPI.Tests.Core", "CheckoutPaymentAPI.Tests.Core\CheckoutPaymentAPI.Tests.Core.csproj", "{D25EDE4B-7617-4996-9269-0DA65F0B3675}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{E1200726-547F-44E4-983C-BC8C29B91B0E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +50,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7BF67BC8-5EF7-4C8C-BEBC-4CC36AB5D7CF} = {E1200726-547F-44E4-983C-BC8C29B91B0E}
+		{7853FAC5-BA90-46BE-A317-400F7B5BC36A} = {E1200726-547F-44E4-983C-BC8C29B91B0E}
+		{D25EDE4B-7617-4996-9269-0DA65F0B3675} = {E1200726-547F-44E4-983C-BC8C29B91B0E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F38764D-D0F5-4DEE-AB8C-9DF716FC85DF}

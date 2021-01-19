@@ -74,6 +74,21 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
         }
 
         [TestMethod]
+        public void Fails_Invalid_Card_Number()
+        {
+            var request = new ProcessPaymentRequest
+            {
+                CardNumber = "4111111111111112"
+            };
+            var nowProvider = new NowProvider();
+            var validator = new ProcessPaymentValidator(nowProvider);
+            var failures = validator.ShouldHaveValidationErrorFor(r => r.CardNumber, request);
+
+            Assert.AreEqual(1, failures.Count());
+            Assert.AreEqual("Card number invalid", failures.First().ErrorMessage);
+        }
+
+        [TestMethod]
         public void Fails_Expiry_In_Past()
         {
             var testNow = new DateTime(2021, 01, 01);
@@ -135,7 +150,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
         }
 
         [TestMethod]
-        public void Passes_Good_Card_Number()
+        public void Passes_Valid_Card_Number()
         {
             var request = new ProcessPaymentRequest
             {
