@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CheckoutPaymentAPI.Models.DTOs;
 using CheckoutPaymentAPI.Requests.Queries.GetPaymentDetails;
 using MediatR;

@@ -11,6 +11,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CheckoutPaymentAPI.Core.Models;
+using CheckoutPaymentAPI.Options;
+using Microsoft.Extensions.Caching.Memory;
+using Serilog;
 
 namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
 {
@@ -18,6 +21,12 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
     [TestCategory("Requests - Commands - ProcessPayment - Handler")]
     public class ProcessPaymentHandlerTests
     {
+        private readonly ILogger _logger = new LoggerConfiguration().CreateLogger();
+        private readonly CachingOptions _cachingOptions = new CachingOptions
+        {
+            ProccessedPaymentTTLMinutes = 300
+        };
+
         [TestMethod]
         public async Task Stores_Masked_Card_Details()
         {
@@ -49,10 +58,26 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
                     PaymentId = RETURNED_PAYMENT_ID
                 });
 
+            var memoryCacheMock = new Mock<IMemoryCache>();
+            var cacheEntryMock = new Mock<ICacheEntry>();
+
+            memoryCacheMock
+                .Setup(mock => mock.TryGetValue(It.IsAny<string>(), out It.Ref<object>.IsAny))
+                .Returns(false);
+
+            memoryCacheMock
+                .Setup(mock => mock.CreateEntry(It.IsAny<object>()))
+                .Returns(cacheEntryMock.Object);
 
             using var context = Setup.CreateContext();
 
-            var handler = new ProcessPaymentHandler(acqBankMock.Object, nowProvider, context);
+            var handler = new ProcessPaymentHandler(
+                acqBankMock.Object, 
+                nowProvider, 
+                memoryCacheMock.Object,
+                _logger,
+                _cachingOptions,
+                context);
             var result = await handler.Handle(request, CancellationToken.None);
 
             Assert.IsTrue(result.Success);
@@ -101,8 +126,25 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
                     PaymentId = RETURNED_PAYMENT_ID
                 });
 
+            var memoryCacheMock = new Mock<IMemoryCache>();
+            var cacheEntryMock = new Mock<ICacheEntry>();
+
+            memoryCacheMock
+                .Setup(mock => mock.TryGetValue(It.IsAny<string>(), out It.Ref<object>.IsAny))
+                .Returns(false);
+
+            memoryCacheMock
+                .Setup(mock => mock.CreateEntry(It.IsAny<object>()))
+                .Returns(cacheEntryMock.Object);
+
             // use mock of acqbank to ensure we get a failure here
-            var handler = new ProcessPaymentHandler(acqBankMock.Object, nowProvider, context);
+            var handler = new ProcessPaymentHandler(
+                acqBankMock.Object, 
+                nowProvider,
+                memoryCacheMock.Object,
+                _logger,
+                _cachingOptions,
+                context);
             var result = await handler.Handle(request, CancellationToken.None);
 
             // ensure payment is still saved in failed state

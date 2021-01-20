@@ -151,5 +151,11 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
             Assert.AreEqual($"No payment details could be found for id {PAYMENT_ID}", data.Message);
             Assert.AreEqual(0, data.Errors.Count);
         }
+
+        [TestMethod]
+        public async Task Returns_401_For_UnAuthed_Requests()
+        {
+            Assert.Fail();
+        }
     }
 }

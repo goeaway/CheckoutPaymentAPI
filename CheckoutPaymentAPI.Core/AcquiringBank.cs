@@ -11,7 +11,12 @@ namespace CheckoutPaymentAPI.Core
     {
         public Task<AcquiringBankResponse> SendPayment()
         {
-            throw new NotImplementedException();
+            // faked result
+            return Task.Run(() => new AcquiringBankResponse
+            {
+                Success = true,
+                PaymentId = new Random().Next()
+            });
         }
     }
 }

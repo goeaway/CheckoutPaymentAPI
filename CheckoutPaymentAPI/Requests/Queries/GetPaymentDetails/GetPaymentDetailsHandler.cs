@@ -2,6 +2,7 @@
 using CheckoutPaymentAPI.Models.DTOs;
 using CheckoutPaymentAPI.Persistence;
 using MediatR;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +13,12 @@ namespace CheckoutPaymentAPI.Requests.Queries.GetPaymentDetails
 {
     public class GetPaymentDetailsHandler : IRequestHandler<GetPaymentDetailsRequest, GetPaymentDetailsResponseDTO>
     {
+        private readonly ILogger _logger;
         private readonly CheckoutPaymentAPIContext _context;
 
-        public GetPaymentDetailsHandler(CheckoutPaymentAPIContext context)
+        public GetPaymentDetailsHandler(ILogger logger, CheckoutPaymentAPIContext context)
         {
+            _logger = logger;
             _context = context;
         }
         public async Task<GetPaymentDetailsResponseDTO> Handle(GetPaymentDetailsRequest request, CancellationToken cancellationToken)
@@ -29,6 +32,7 @@ namespace CheckoutPaymentAPI.Requests.Queries.GetPaymentDetails
                 throw new RequestFailedException($"No payment details could be found for id {request.PaymentId}");
             }
 
+            _logger.Information("Retrieving found payment with id {Id}", foundPayment.Id);
             // could use Automapper here
             return new GetPaymentDetailsResponseDTO 
             { 

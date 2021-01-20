@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -40,17 +41,19 @@ namespace CheckoutPaymentAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCachingOptions(Configuration);
             services.AddControllers().AddFluentValidation(fv =>
             {
                 fv.RegisterValidatorsFromAssemblyContaining<ProcessPaymentValidator>();
             });
 
             services.AddLogger();
+            services.AddMemoryCache();
             services.AddMediatR(Assembly.GetAssembly(typeof(ProcessPaymentHandler)));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
             services.AddTransient<IAcquiringBank, AcquiringBank>();
 
-            services.AddSingleton<INowProvider, NowProvider>();
+            services.AddSingleton<INowProvider>(new NowProvider());
 
             services.AddDbContext<CheckoutPaymentAPIContext>(
                 options => options.UseInMemoryDatabase("CheckoutPaymentAPIDatabase"));
@@ -103,6 +106,10 @@ namespace CheckoutPaymentAPI
                     var requestFailedException = exception as RequestFailedException;
                     ctx.Response.StatusCode = (int)requestFailedException.Code;
                     errorResponse.Message = requestFailedException.Message;
+                } 
+                else
+                {
+                    errorResponse.Message = exception.Message;
                 }
 
                 await ctx.Response.WriteAsync(JsonConvert.SerializeObject(errorResponse));

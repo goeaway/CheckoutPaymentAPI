@@ -9,7 +9,6 @@ namespace CheckoutPaymentAPI.Core.Abstractions
     /// </summary>
     public interface INowProvider
     {
-     
         public DateTime Now { get; }
     }
 }

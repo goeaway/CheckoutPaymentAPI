@@ -5,6 +5,7 @@ using CheckoutPaymentAPI.Requests.Queries.GetPaymentDetails;
 using CheckoutPaymentAPI.Tests.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,6 +18,8 @@ namespace CheckoutPaymentAPI.Tests.Requests.Queries.GetPaymentDetails
     [TestCategory("Requests - Queries - GetPaymentDetails - Handler")]
     public class GetPaymentHandlerTests
     {
+        private readonly ILogger _logger = new LoggerConfiguration().CreateLogger();
+
         [TestMethod]
         public async Task Throws_If_No_Data_Found_For_Id()
         {
@@ -26,7 +29,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Queries.GetPaymentDetails
             };
 
             using var context = Setup.CreateContext();
-            var handler = new GetPaymentDetailsHandler(context);
+            var handler = new GetPaymentDetailsHandler(_logger, context);
             await Assert
                 .ThrowsExceptionAsync<RequestFailedException>(
                     () => handler.Handle(request, CancellationToken.None));
@@ -63,7 +66,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Queries.GetPaymentDetails
 
             context.SaveChanges();
 
-            var handler = new GetPaymentDetailsHandler(context);
+            var handler = new GetPaymentDetailsHandler(_logger, context);
             var result = await handler.Handle(request, CancellationToken.None);
 
             Assert.AreEqual(PAYMENT_RESULT, result.PaymentResult);

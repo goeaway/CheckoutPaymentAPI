@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using CheckoutPaymentAPI.Options;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using System;
@@ -20,6 +21,13 @@ namespace CheckoutPaymentAPI
 
             collection.AddSingleton<ILogger>(logger);
             return collection;
+        }
+
+        public static IServiceCollection AddCachingOptions(this IServiceCollection collection, IConfiguration configuration)
+        {
+            var options = new CachingOptions();
+            configuration.GetSection(CachingOptions.Key).Bind(options);
+            return collection.AddSingleton(options);
         }
     }
 }
