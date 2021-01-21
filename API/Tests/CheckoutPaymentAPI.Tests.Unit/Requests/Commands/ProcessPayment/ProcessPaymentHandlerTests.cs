@@ -34,8 +34,10 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
             const string CARD_NUMBER = "4111111111111111";
             const string CVV = "123";
             const string CURRENCY = "GBP";
+            const string OWNER = "owner";
             const decimal AMOUNT = .1m;
             var EXPIRY = new DateTime(2021, 01, 01);
+
 
             var testNow = new DateTime(2021, 02, 01);
             var nowProvider = new NowProvider(testNow);
@@ -46,7 +48,8 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
                 Amount = AMOUNT,
                 Currency = CURRENCY,
                 CVV = CVV,
-                Expiry = EXPIRY
+                Expiry = EXPIRY,
+                Owner = OWNER
             };
 
             var acqBankMock = new Mock<IAcquiringBank>();
@@ -91,6 +94,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
             Assert.AreEqual(EXPIRY, foundPayment.Expiry);
             Assert.AreEqual(AMOUNT, foundPayment.Amount);
             Assert.AreEqual(CURRENCY, foundPayment.Currency);
+            Assert.AreEqual(OWNER, foundPayment.Owner);
         }
 
         [TestMethod]
@@ -100,6 +104,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
             const string CARD_NUMBER = "4111111111111111";
             const string CVV = "123";
             const string CURRENCY = "GBP";
+            const string OWNER = "owner";
             const decimal AMOUNT = .1m;
             var EXPIRY = new DateTime(2021, 01, 01);
 
@@ -112,7 +117,8 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
                 Amount = AMOUNT,
                 Currency = CURRENCY,
                 CVV = CVV,
-                Expiry = EXPIRY
+                Expiry = EXPIRY,
+                Owner = OWNER
             };
 
             using var context = Setup.CreateContext();
@@ -158,6 +164,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
             Assert.AreEqual(EXPIRY, foundPayment.Expiry);
             Assert.AreEqual(AMOUNT, foundPayment.Amount);
             Assert.AreEqual(CURRENCY, foundPayment.Currency);
+            Assert.AreEqual(OWNER, foundPayment.Owner);
         }
     }
 }

@@ -14,5 +14,6 @@ namespace CheckoutPaymentAPI.Persistence.Models
         public decimal Amount { get; set; }
         public bool PaymentResult { get; set; }
         public DateTime Created { get; set; }
+        public string Owner { get; set; }
     }
 }

@@ -6,6 +6,7 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,9 +28,9 @@ namespace CheckoutPaymentAPI.Requests.Queries.GetPaymentDetails
             var foundPayment = await _context.ProcessedPayments.FindAsync(request.PaymentId);
 
             // throw error with message if not found, will be picked up by error handler in startup
-            if(foundPayment == null)
+            if(foundPayment == null || foundPayment.Owner != request.Owner)
             {
-                throw new RequestFailedException($"No payment details could be found for id {request.PaymentId}");
+                throw new RequestFailedException($"Payment details not found", HttpStatusCode.NotFound);
             }
 
             _logger.Information("Retrieving found payment with id {Id}", foundPayment.Id);

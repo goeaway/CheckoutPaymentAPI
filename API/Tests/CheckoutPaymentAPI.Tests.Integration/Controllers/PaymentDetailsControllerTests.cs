@@ -32,7 +32,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
                     services.AddSingleton(context);
                 }));
             var client = server.CreateClient();
-
+            
             return (server, client, context);
         }
 
@@ -54,6 +54,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
             const string CARD_NUMBER = "123123423543";
             const string CVV = "123";
             const string CURRENCY = "GBP";
+            const string OWNER = "CheckoutPaymentAPIClient";
             const bool PAYMENT_RESULT = true;
             var EXPIRY = new DateTime(2021, 01, 01);
 
@@ -70,10 +71,12 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
                     CVV = CVV,
                     Expiry = EXPIRY,
                     Currency = CURRENCY,
-                    PaymentResult = PAYMENT_RESULT
+                    PaymentResult = PAYMENT_RESULT,
+                    Owner = OWNER
                 });
 
                 context.SaveChanges();
+                client.DefaultRequestHeaders.Add("X-API-KEY", "CheckoutPaymentAPI-Q2hlY2tvdXRQYXltZW50QVBJ");
 
                 var response = await client.GetAsync($"/paymentdetails/{PAYMENT_ID}");
                 response.EnsureSuccessStatusCode();
@@ -99,6 +102,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
             const string CVV = "123";
             const string CURRENCY = "GBP";
             const bool PAYMENT_RESULT = false;
+            const string OWNER = "CheckoutPaymentAPIClient";
             var EXPIRY = new DateTime(2021, 01, 01);
 
             var (_, client, context) = SetupServer();
@@ -114,10 +118,12 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
                     CVV = CVV,
                     Expiry = EXPIRY,
                     Currency = CURRENCY,
-                    PaymentResult = PAYMENT_RESULT
+                    PaymentResult = PAYMENT_RESULT,
+                    Owner = OWNER
                 });
 
                 context.SaveChanges();
+                client.DefaultRequestHeaders.Add("X-API-KEY", "CheckoutPaymentAPI-Q2hlY2tvdXRQYXltZW50QVBJ");
 
                 var response = await client.GetAsync($"/paymentdetails/{PAYMENT_ID}");
                 response.EnsureSuccessStatusCode();
@@ -135,27 +141,75 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
         }
 
         [TestMethod]
-        public async Task Return_400_For_Unsuccessful_Find()
+        public async Task Return_404_For_Unsuccessful_Find()
         {
             const int PAYMENT_ID = 1;
 
             var (_, client, _) = SetupServer();
 
+            client.DefaultRequestHeaders.Add("X-API-KEY", "CheckoutPaymentAPI-Q2hlY2tvdXRQYXltZW50QVBJ");
             var response = await client.GetAsync($"/paymentdetails/{PAYMENT_ID}");
 
-            Assert.AreEqual(400, (int)response.StatusCode);
+            Assert.AreEqual(404, (int)response.StatusCode);
 
             var content = await response.Content.ReadAsStringAsync();
             var data = JsonConvert.DeserializeObject<ErrorResponseDTO>(content);
 
-            Assert.AreEqual($"No payment details could be found for id {PAYMENT_ID}", data.Message);
+            Assert.AreEqual($"Payment details not found", data.Message);
             Assert.AreEqual(0, data.Errors.Count);
+        }
+
+        [TestMethod]
+        public async Task Return_404_For_Incorrect_Owner()
+        {
+            const int PAYMENT_ID = 1;
+            const decimal AMOUNT = .1m;
+            const string CARD_NUMBER = "123123423543";
+            const string CVV = "123";
+            const string CURRENCY = "GBP";
+            const bool PAYMENT_RESULT = false;
+            const string OWNER = "DUMMY CLIENT";
+            var EXPIRY = new DateTime(2021, 01, 01);
+
+            var (_, client, context) = SetupServer();
+
+            using (context)
+            {
+                // add to DB so we can get it back
+                context.ProcessedPayments.Add(new ProcessedPayment
+                {
+                    Id = PAYMENT_ID,
+                    Amount = AMOUNT,
+                    CardNumber = CARD_NUMBER,
+                    CVV = CVV,
+                    Expiry = EXPIRY,
+                    Currency = CURRENCY,
+                    PaymentResult = PAYMENT_RESULT,
+                    Owner = OWNER
+                });
+
+                context.SaveChanges();
+                client.DefaultRequestHeaders.Add("X-API-KEY", "CheckoutPaymentAPI-Q2hlY2tvdXRQYXltZW50QVBJ");
+
+                var response = await client.GetAsync($"/paymentdetails/{PAYMENT_ID}");
+                Assert.AreEqual(404, (int)response.StatusCode);
+            }
         }
 
         [TestMethod]
         public async Task Returns_401_For_UnAuthed_Requests()
         {
-            Assert.Fail();
+            const int PAYMENT_ID = 1;
+
+            var (_, client, context) = SetupServer();
+
+            using (context)
+            {
+                client.DefaultRequestHeaders.Add("X-API-KEY", "CheckoutPaymentAPI-WrongAPIKey");
+
+                var response = await client.GetAsync($"/paymentdetails/{PAYMENT_ID}");
+                Assert.AreEqual(401, (int)response.StatusCode);
+            }
         }
     }
 }

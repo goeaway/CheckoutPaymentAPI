@@ -26,5 +26,6 @@ namespace CheckoutPaymentAPI.Requests.Commands.ProcessPayment
         /// Gets or sets the CVV security code of the card used in the payment
         /// </summary>
         public string CVV { get; set; }
+        public string Owner { get; set; }
     }
 }

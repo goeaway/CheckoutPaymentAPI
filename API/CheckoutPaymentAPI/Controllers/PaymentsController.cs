@@ -2,6 +2,8 @@
 using CheckoutPaymentAPI.Models.DTOs;
 using CheckoutPaymentAPI.Requests.Commands.ProcessPayment;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 
@@ -9,15 +11,16 @@ namespace CheckoutPaymentAPI.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class PaymentsController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly IMemoryCache _cache;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public PaymentsController(IMediator mediator, IMemoryCache cache)
+        public PaymentsController(IMediator mediator, IHttpContextAccessor httpContextAccessor)
         {
             _mediator = mediator;
-            _cache = cache;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpPost("process")]
@@ -29,7 +32,8 @@ namespace CheckoutPaymentAPI.Controllers
                 Amount = dto.Amount,
                 Currency = dto.Currency,
                 CVV = dto.CVV,
-                Expiry = dto.Expiry
+                Expiry = dto.Expiry,
+                Owner = _httpContextAccessor.GetOwnerIdentifier()
             });
         }
     }

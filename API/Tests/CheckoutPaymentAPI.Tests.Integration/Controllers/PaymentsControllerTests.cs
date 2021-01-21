@@ -84,6 +84,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
 
                 var requestContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
+                client.DefaultRequestHeaders.Add("X-API-KEY", "CheckoutPaymentAPI-Q2hlY2tvdXRQYXltZW50QVBJ");
                 var response = await client.PostAsync($"/payments/process", requestContent);
                 response.EnsureSuccessStatusCode();
 
@@ -131,6 +132,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
 
                 var requestContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
+                client.DefaultRequestHeaders.Add("X-API-KEY", "CheckoutPaymentAPI-Q2hlY2tvdXRQYXltZW50QVBJ");
                 var response = await client.PostAsync($"/payments/process", requestContent);
                 response.EnsureSuccessStatusCode();
 
@@ -169,6 +171,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
 
                 var requestContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
+                client.DefaultRequestHeaders.Add("X-API-KEY", "CheckoutPaymentAPI-Q2hlY2tvdXRQYXltZW50QVBJ");
                 var response = await client.PostAsync($"/payments/process", requestContent);
                 Assert.AreEqual(400, (int)response.StatusCode);
 
@@ -221,6 +224,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
                     Currency = CURRENCY,
                 };
 
+                client.DefaultRequestHeaders.Add("X-API-KEY", "CheckoutPaymentAPI-Q2hlY2tvdXRQYXltZW50QVBJ");
                 var requestContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
                 var response1 = await client.PostAsync("/payments/process", requestContent);
@@ -234,7 +238,34 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
         [TestMethod]
         public async Task Returns_401_For_UnAuthed_Requests()
         {
-            Assert.Fail();
+            const decimal AMOUNT = .1m;
+            const string INVALID_CARD_NUMBER = "4111111111111111";
+            const string CVV = "123";
+            const string CURRENCY = "GBP";
+
+            var testNow = new DateTime(2022, 01, 01);
+            var EXPIRY = testNow.AddYears(1);
+
+            var nowProvider = new NowProvider();
+            var (_, client, context, _) = SetupServer(nowProvider);
+
+            using (context)
+            {
+                var request = new ProcessPaymentsRequestDTO
+                {
+                    Amount = AMOUNT,
+                    CardNumber = INVALID_CARD_NUMBER,
+                    CVV = CVV,
+                    Expiry = EXPIRY,
+                    Currency = CURRENCY,
+                };
+                client.DefaultRequestHeaders.Add("X-API-KEY", "CheckoutPaymentAPI-WrongAPIKey");
+
+                var requestContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync("/payments/process", requestContent);
+                Assert.AreEqual(401, (int)response.StatusCode);
+            }
         }
     }
 }

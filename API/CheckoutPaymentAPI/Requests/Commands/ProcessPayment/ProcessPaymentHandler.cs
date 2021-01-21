@@ -69,11 +69,12 @@ namespace CheckoutPaymentAPI.Requests.Commands.ProcessPayment
                 Expiry = request.Expiry,
                 Amount = request.Amount,
                 Created = _nowProvider.Now,
-                Currency = request.Currency
+                Currency = request.Currency,
+                Owner = request.Owner
             };
 
             // add new payment to DB
-            _logger.Information("Storing payment record with id {Id}", newPayment.Id);
+            _logger.Information("Storing payment record with id {Id} for client {Owner}", newPayment.Id, newPayment.Owner);
             _context.ProcessedPayments.Add(newPayment);
             await _context.SaveChangesAsync();
 
@@ -114,6 +115,7 @@ namespace CheckoutPaymentAPI.Requests.Commands.ProcessPayment
             builder.Append(GetBase64String(request.Currency));
             builder.Append(GetBase64String(request.CVV));
             builder.Append(GetBase64String(request.Expiry.ToShortDateString()));
+            builder.Append(GetBase64String(request.Owner));
 
             return builder.ToString();
         }

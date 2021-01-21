@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using AspNetCore.Authentication.ApiKey;
 using CheckoutPaymentAPI.Behaviours;
 using CheckoutPaymentAPI.Core;
 using CheckoutPaymentAPI.Core.Abstractions;
@@ -41,6 +43,37 @@ namespace CheckoutPaymentAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(ApiKeyDefaults.AuthenticationScheme)
+                .AddApiKeyInHeader(options =>
+                {
+                    options.Realm = "CheckoutPaymentAPI";
+                    options.KeyName = "X-API-KEY";
+                    options.Events = new ApiKeyEvents
+                    {
+                        OnValidateKey = async (context) =>
+                        {
+                            // validate api key header value
+                            // in production this event implemention would make use of some key store
+                            // such as secret manager and not have a hardcoded key value here
+                            if (context.ApiKey == "CheckoutPaymentAPI-Q2hlY2tvdXRQYXltZW50QVBJ")
+                            {
+                                var claims = new[]
+                                {
+                                    new Claim(ClaimTypes.NameIdentifier, "CheckoutPaymentAPIClient", ClaimValueTypes.String, context.Options.ClaimsIssuer),
+                                    new Claim(ClaimTypes.Name, "CheckoutPaymentAPIClient", ClaimValueTypes.String, context.Options.ClaimsIssuer),
+                                };
+
+                                context.Principal = new ClaimsPrincipal(new ClaimsIdentity(claims, context.Scheme.Name));
+                                context.Success();
+                            }
+                            else
+                            {
+                                context.NoResult();
+                            }
+                        }
+                    };
+                });
+
             services.AddCachingOptions(Configuration);
             services.AddControllers().AddFluentValidation(fv =>
             {
@@ -57,6 +90,8 @@ namespace CheckoutPaymentAPI
 
             services.AddDbContext<CheckoutPaymentAPIContext>(
                 options => options.UseInMemoryDatabase("CheckoutPaymentAPIDatabase"));
+
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,7 +106,7 @@ namespace CheckoutPaymentAPI
             app.UseExceptionHandler(ExceptionHandler);
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
