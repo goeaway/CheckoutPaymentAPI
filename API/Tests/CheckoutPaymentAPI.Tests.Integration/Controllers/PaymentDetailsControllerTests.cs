@@ -18,7 +18,7 @@ using CheckoutPaymentAPI.Persistence.Models;
 namespace CheckoutPaymentAPI.IntegrationTests.Controllers
 {
     [TestClass]
-    [TestCategory("Integration - PaymentDetailsController")]
+    [TestCategory("API - Integration - PaymentDetailsController")]
     public class PaymentDetailsControllerTests
     {
         private (TestServer server, HttpClient client, CheckoutPaymentAPIContext context) SetupServer()

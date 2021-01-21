@@ -10,7 +10,7 @@ using CheckoutPaymentAPI.Core.Providers;
 namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
 {
     [TestClass]
-    [TestCategory("Requests - Commands - ProcessPayment - Validation")]
+    [TestCategory("API - Requests - Commands - ProcessPayment - Validation")]
     public class ProcessPaymentValidationTests
     {
         [TestMethod]

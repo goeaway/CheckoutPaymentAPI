@@ -9,7 +9,7 @@ using System.Text;
 namespace CheckoutPaymentAPI.Tests.Requests.Queries.GetPaymentDetails
 {
     [TestClass]
-    [TestCategory("Requests - Queries - GetPaymentDetails - Validation")]
+    [TestCategory("API - Requests - Queries - GetPaymentDetails - Validation")]
     public class GetPaymentDetailsValidationTests
     {
         [TestMethod]

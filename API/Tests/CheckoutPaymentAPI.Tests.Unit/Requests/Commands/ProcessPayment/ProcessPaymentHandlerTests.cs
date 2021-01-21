@@ -18,7 +18,7 @@ using Serilog;
 namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
 {
     [TestClass]
-    [TestCategory("Requests - Commands - ProcessPayment - Handler")]
+    [TestCategory("API - Requests - Commands - ProcessPayment - Handler")]
     public class ProcessPaymentHandlerTests
     {
         private readonly ILogger _logger = new LoggerConfiguration().CreateLogger();

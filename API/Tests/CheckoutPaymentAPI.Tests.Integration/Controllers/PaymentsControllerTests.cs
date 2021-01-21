@@ -20,7 +20,7 @@ using CheckoutPaymentAPI.Core.Models;
 namespace CheckoutPaymentAPI.IntegrationTests.Controllers
 {
     [TestClass]
-    [TestCategory("Integration - PaymentsController")]
+    [TestCategory("API - Integration - PaymentsController")]
     public class PaymentsControllerTests
     {
         private (TestServer server, HttpClient client, CheckoutPaymentAPIContext context, Mock<IAcquiringBank> mockBank) SetupServer(INowProvider nowProvider = null)
