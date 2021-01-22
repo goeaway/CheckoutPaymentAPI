@@ -15,12 +15,10 @@ namespace CheckoutPaymentAPI.Controllers
     public class PaymentsController : ControllerBase
     {
         private readonly IMediator _mediator;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public PaymentsController(IMediator mediator, IHttpContextAccessor httpContextAccessor)
+        public PaymentsController(IMediator mediator)
         {
             _mediator = mediator;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpPost("process")]
@@ -33,7 +31,7 @@ namespace CheckoutPaymentAPI.Controllers
                 Currency = dto.Currency,
                 CVV = dto.CVV,
                 Expiry = dto.Expiry,
-                Owner = _httpContextAccessor.GetOwnerIdentifier()
+                Owner = Request.HttpContext.GetOwnerIdentifier()
             });
         }
     }

@@ -14,12 +14,10 @@ namespace CheckoutPaymentAPI.Controllers
     public class PaymentDetailsController : Controller
     {
         private readonly IMediator _mediator;
-        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public PaymentDetailsController(IMediator mediator, IHttpContextAccessor httpContextAccessor)
+        public PaymentDetailsController(IMediator mediator)
         {
             _mediator = mediator;
-            _httpContextAccessor = httpContextAccessor;
         }
         
         [HttpGet("{identifier}")]
@@ -29,7 +27,7 @@ namespace CheckoutPaymentAPI.Controllers
                 new GetPaymentDetailsRequest 
                 { 
                     PaymentId = identifier, 
-                    Owner = _httpContextAccessor.GetOwnerIdentifier() 
+                    Owner = Request.HttpContext.GetOwnerIdentifier() 
                 });
         }
     }

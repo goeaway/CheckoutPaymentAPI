@@ -7,12 +7,11 @@ using System.Threading.Tasks;
 
 namespace CheckoutPaymentAPI
 {
-    public static class HttpContextAccessorExtensions
+    public static class HttpContextExtensions
     {
-        public static string GetOwnerIdentifier(this IHttpContextAccessor contextAccessor)
+        public static string GetOwnerIdentifier(this HttpContext httpContext)
         {
-            return contextAccessor
-                .HttpContext
+            return httpContext
                 .User
                 .Claims
                 .FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)
