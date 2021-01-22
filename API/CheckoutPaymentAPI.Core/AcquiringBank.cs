@@ -9,7 +9,7 @@ namespace CheckoutPaymentAPI.Core
 {
     public class AcquiringBank : IAcquiringBank
     {
-        public Task<AcquiringBankResponse> SendPayment()
+        public Task<AcquiringBankResponse> SendPayment(AcquiringBankRequest request)
         {
             // faked result
             return Task.Run(() => new AcquiringBankResponse

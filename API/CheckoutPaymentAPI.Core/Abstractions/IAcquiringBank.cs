@@ -8,6 +8,6 @@ namespace CheckoutPaymentAPI.Core.Abstractions
 {
     public interface IAcquiringBank
     {
-        Task<AcquiringBankResponse> SendPayment();
+        Task<AcquiringBankResponse> SendPayment(AcquiringBankRequest request);
     }
 }

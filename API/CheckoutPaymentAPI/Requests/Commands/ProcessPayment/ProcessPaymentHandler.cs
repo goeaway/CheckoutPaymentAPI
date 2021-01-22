@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
+using CheckoutPaymentAPI.Core.Models;
 
 namespace CheckoutPaymentAPI.Requests.Commands.ProcessPayment
 {
@@ -55,7 +56,14 @@ namespace CheckoutPaymentAPI.Requests.Commands.ProcessPayment
 
             // use the acqbank to send payment
             _logger.Information("Verifying payment with acquiring bank");
-            var bankResponse = await _acquiringBank.SendPayment();
+            var bankResponse = await _acquiringBank.SendPayment(new AcquiringBankRequest 
+            {
+                CardNumber = request.CardNumber,
+                Amount = request.Amount,
+                Currency = request.Currency,
+                CVV = request.CVV,
+                Expiry = request.Expiry
+            });
             
             // save response to newPayment
             var newPayment = new ProcessedPayment

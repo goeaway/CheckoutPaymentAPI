@@ -66,7 +66,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
 
             using (context)
             {
-                acqBankMock.Setup(mock => mock.SendPayment())
+                acqBankMock.Setup(mock => mock.SendPayment(It.IsAny<AcquiringBankRequest>()))
                     .ReturnsAsync(new AcquiringBankResponse
                     {
                         Success = true,
@@ -114,7 +114,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
 
             using (context)
             {
-                acqBankMock.Setup(mock => mock.SendPayment())
+                acqBankMock.Setup(mock => mock.SendPayment(It.IsAny<AcquiringBankRequest>()))
                     .ReturnsAsync(new AcquiringBankResponse
                     {
                         Success = false,
@@ -203,7 +203,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
 
             using (context)
             {
-                acqBankMock.SetupSequence(mock => mock.SendPayment())
+                acqBankMock.SetupSequence(mock => mock.SendPayment(It.IsAny<AcquiringBankRequest>()))
                     .ReturnsAsync(new AcquiringBankResponse
                     {
                         Success = true,
