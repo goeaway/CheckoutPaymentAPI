@@ -36,7 +36,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Queries.GetPaymentDetails
         }
 
         [TestMethod]
-        public async Task Returns_Details_In_DTO()
+        public async Task Throws_If_No_Data_Found_For_Owner()
         {
             const int PAYMENT_ID = 1;
             const string CARD_NUMBER = "1234";
@@ -44,11 +44,13 @@ namespace CheckoutPaymentAPI.Tests.Requests.Queries.GetPaymentDetails
             const string CURRENCY = "GBP";
             const decimal AMOUNT = .1m;
             const bool PAYMENT_RESULT = true;
+            const string OWNER = "owner";
             var EXPIRY = new DateTime(2021, 01, 01);
 
             var request = new GetPaymentDetailsRequest
             {
-                PaymentId = PAYMENT_ID
+                PaymentId = PAYMENT_ID,
+                Owner = OWNER
             };
 
             using var context = Setup.CreateContext();
@@ -61,7 +63,49 @@ namespace CheckoutPaymentAPI.Tests.Requests.Queries.GetPaymentDetails
                 Currency = CURRENCY,
                 Amount = AMOUNT,
                 CVV = CVV,
-                PaymentResult = PAYMENT_RESULT
+                PaymentResult = PAYMENT_RESULT,
+                Owner = "Different Owner"
+            });
+
+            context.SaveChanges();
+
+            var handler = new GetPaymentDetailsHandler(_logger, context);
+            await Assert
+                .ThrowsExceptionAsync<RequestFailedException>(
+                    () => handler.Handle(request, CancellationToken.None));
+        }
+
+
+        [TestMethod]
+        public async Task Returns_Details_In_DTO()
+        {
+            const int PAYMENT_ID = 1;
+            const string CARD_NUMBER = "1234";
+            const string CVV = "123";
+            const string CURRENCY = "GBP";
+            const decimal AMOUNT = .1m;
+            const bool PAYMENT_RESULT = true;
+            const string OWNER = "owner";
+            var EXPIRY = new DateTime(2021, 01, 01);
+
+            var request = new GetPaymentDetailsRequest
+            {
+                PaymentId = PAYMENT_ID,
+                Owner = OWNER
+            };
+
+            using var context = Setup.CreateContext();
+
+            context.ProcessedPayments.Add(new ProcessedPayment
+            {
+                Id = PAYMENT_ID,
+                CardNumber = CARD_NUMBER,
+                Expiry = EXPIRY,
+                Currency = CURRENCY,
+                Amount = AMOUNT,
+                CVV = CVV,
+                PaymentResult = PAYMENT_RESULT,
+                Owner = OWNER
             });
 
             context.SaveChanges();

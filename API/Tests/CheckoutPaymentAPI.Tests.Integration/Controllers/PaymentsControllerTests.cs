@@ -184,7 +184,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
         }
 
         [TestMethod]
-        public async Task Multiple_Same_Requests_Are_Blocked_If_Inside_TTL()
+        public async Task Returns_429_When_Same_Requests_Are_Blocked_If_Inside_TTL()
         {
             // api should cache a hash of the data in each process request and block any that are the same as currently live cache records
             const int FIRST_RETURNED_PAYMENT_ID = 1;

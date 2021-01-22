@@ -24,7 +24,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
         private readonly ILogger _logger = new LoggerConfiguration().CreateLogger();
         private readonly CachingOptions _cachingOptions = new CachingOptions
         {
-            ProccessedPaymentTTLMinutes = 300
+            ProccessedPaymentTTLMinutes = 1
         };
 
         [TestMethod]
@@ -165,6 +165,24 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
             Assert.AreEqual(AMOUNT, foundPayment.Amount);
             Assert.AreEqual(CURRENCY, foundPayment.Currency);
             Assert.AreEqual(OWNER, foundPayment.Owner);
+        }
+ 
+        [TestMethod]
+        public async Task Passes_Request_Items_To_Acq_Bank_Call()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public async Task Throws_When_Cache_Already_Contains_Key()
+        {
+            Assert.Fail();
+        }
+
+        [TestMethod]
+        public async Task Adds_Key_To_Cache_With_Options_TTL()
+        {
+            Assert.Fail();
         }
     }
 }
