@@ -120,15 +120,10 @@ namespace CheckoutPaymentAPI.Requests.Commands.ProcessPayment
             builder.Append(request.Expiry.ToShortDateString());
             builder.Append(request.Owner);
 
-            var hasher = new SHA256Managed();
-            var hash = "";
-            var bytes = hasher.ComputeHash(Encoding.ASCII.GetBytes(builder.ToString()));
-            foreach(var b in bytes) 
-            {
-                hash += b.ToString("x2");
-            }
+            using var sha256 = SHA256.Create();
 
-            return hash;
+            var bytes = Encoding.UTF8.GetBytes(builder.ToString());
+            return Convert.ToBase64String(sha256.ComputeHash(bytes));
         }
     }
 }
