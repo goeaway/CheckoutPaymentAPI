@@ -4,7 +4,7 @@ and retrieve historical data from previous transactions.
 
 The project consists of an ASPNET Core web api, running on .net core 3.1, and a .net core library merchants could use to access the API from a .net application.
 
-### How to use
+## How to use
 
 Clone the repo, then pick one of the below options
 
@@ -16,7 +16,7 @@ When interacting with the API, add an `X-API-KEY` header to each request with ei
 `CheckoutPaymentAPI-Q2hlY2tvdXRQYXltZW50QVBJ`
 `CheckoutPaymentAPI-DemoKey`
 
-### Endpoints
+## Endpoints
 
 The API utilises swagger to document the possible endpoints of the API, go to `/swagger` to see info on each endpoint.
 
