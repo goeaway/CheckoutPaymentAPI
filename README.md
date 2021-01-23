@@ -20,7 +20,7 @@ When interacting with the API, add an `X-API-KEY` header to each request with ei
 
 The API utilises swagger to document the possible endpoints of the API, go to `/swagger` to see info on each endpoint.
 
-#### `POST` Payments/process
+#### `POST` `Payments/process`
 
 This endpoint allows merchants to submit a new payment, provide the following JSON info in the body of the request:
 
@@ -44,7 +44,7 @@ a numeric identifier to retrieve info on the payment in future.
 }
 ```
 
-#### `GET` PaymentDetails/{paymentId}
+#### `GET` `PaymentDetails/{paymentId}`
 
 This endpoint allows merchants to retrieve information on previously made payments to the API. Provide a paymentId number of a previously made payment.
 
