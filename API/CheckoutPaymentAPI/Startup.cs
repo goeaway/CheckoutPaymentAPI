@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AspNetCore.Authentication.ApiKey;
+using CheckoutPaymentAPI.Authentication;
 using CheckoutPaymentAPI.Behaviours;
 using CheckoutPaymentAPI.Core;
 using CheckoutPaymentAPI.Core.Abstractions;
@@ -54,15 +55,17 @@ namespace CheckoutPaymentAPI
                     {
                         OnValidateKey = (context) => Task.Run(() =>
                         {
-                            // validate api key header value
-                            // in production this event implemention would make use of some key store
-                            // such as secret manager and not have a hardcoded key value here
-                            if (context.ApiKey == "CheckoutPaymentAPI-Q2hlY2tvdXRQYXltZW50QVBJ")
+                            var keyRepo = context.HttpContext.RequestServices.GetRequiredService<IApiKeyRepository>();
+                            var keys = keyRepo.GetApiKeys();
+
+                            var match = keys.FirstOrDefault(key => key.Key == context.ApiKey);
+
+                            if(match != null)
                             {
                                 var claims = new[]
                                 {
-                                    new Claim(ClaimTypes.NameIdentifier, "CheckoutPaymentAPIClient", ClaimValueTypes.String, context.Options.ClaimsIssuer),
-                                    new Claim(ClaimTypes.Name, "CheckoutPaymentAPIClient", ClaimValueTypes.String, context.Options.ClaimsIssuer),
+                                    new Claim(ClaimTypes.NameIdentifier, match.Owner, ClaimValueTypes.String, context.Options.ClaimsIssuer),
+                                    new Claim(ClaimTypes.Name, match.Owner, ClaimValueTypes.String, context.Options.ClaimsIssuer),
                                 };
 
                                 context.Principal = new ClaimsPrincipal(new ClaimsIdentity(claims, context.Scheme.Name));
@@ -92,6 +95,8 @@ namespace CheckoutPaymentAPI
 
             services.AddDbContext<CheckoutPaymentAPIContext>(
                 options => options.UseInMemoryDatabase("CheckoutPaymentAPIDatabase"));
+
+            services.AddSingleton<IApiKeyRepository, ApiKeyRepository>();
 
             services.AddSwaggerGen(c => {
                 c.SwaggerDoc("v1", new OpenApiInfo
