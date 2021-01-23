@@ -278,7 +278,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
         [TestMethod]
         public async Task Adds_Key_To_Cache()
         {
-            const string GENERATED_REQUEST_KEY = "NDExMTExMTExMTExMTExMQ==MC4xR0JQMTIzMDEvMDEvMjAyMQ==b3duZXI=";
+            const string GENERATED_REQUEST_KEY = "37192c388d3a76a2817750eaadbf106863f79f86b0f4d0ce5f13e54e75f1f2c4";
             const int RETURNED_PAYMENT_ID = 1;
             const string CARD_NUMBER = "4111111111111111";
             const string CVV = "123";

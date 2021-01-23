@@ -15,6 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
 using CheckoutPaymentAPI.Core.Models;
+using System.Security.Cryptography;
 
 namespace CheckoutPaymentAPI.Requests.Commands.ProcessPayment
 {
@@ -108,24 +109,26 @@ namespace CheckoutPaymentAPI.Requests.Commands.ProcessPayment
             entry.AbsoluteExpiration = offset;
         }
 
-        private string GetBase64String(string value)
-        {
-            var bytes = Encoding.UTF8.GetBytes(value);
-            return Convert.ToBase64String(bytes);
-        }
-
         private string BuildCacheKey(ProcessPaymentRequest request)
         {
             var builder = new StringBuilder();
 
-            builder.Append(GetBase64String(request.CardNumber));
-            builder.Append(GetBase64String(request.Amount + ""));
-            builder.Append(GetBase64String(request.Currency));
-            builder.Append(GetBase64String(request.CVV));
-            builder.Append(GetBase64String(request.Expiry.ToShortDateString()));
-            builder.Append(GetBase64String(request.Owner));
+            builder.Append(request.CardNumber);
+            builder.Append(request.Amount + "");
+            builder.Append(request.Currency);
+            builder.Append(request.CVV);
+            builder.Append(request.Expiry.ToShortDateString());
+            builder.Append(request.Owner);
 
-            return builder.ToString();
+            var hasher = new SHA256Managed();
+            var hash = "";
+            var bytes = hasher.ComputeHash(Encoding.ASCII.GetBytes(builder.ToString()));
+            foreach(var b in bytes) 
+            {
+                hash += b.ToString("x2");
+            }
+
+            return hash;
         }
     }
 }
