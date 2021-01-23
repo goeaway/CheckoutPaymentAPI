@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace CheckoutPaymentAPI.Tests.Requests.Queries.GetPaymentDetails
 {
     [TestClass]
-    [TestCategory("API - Requests - Queries - GetPaymentDetails - Handler")]
+    [TestCategory("API - Unit - Queries - GetPaymentDetails - Handler")]
     public class GetPaymentHandlerTests
     {
         private readonly ILogger _logger = new LoggerConfiguration().CreateLogger();

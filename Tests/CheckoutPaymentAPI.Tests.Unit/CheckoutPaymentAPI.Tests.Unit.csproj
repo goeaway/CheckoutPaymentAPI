@@ -7,18 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+    <PackageReference Include="Moq" Version="4.16.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.1.0" />
     <PackageReference Include="MSTest.TestFramework" Version="2.1.0" />
     <PackageReference Include="coverlet.collector" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\API\CheckoutPaymentAPI.Persistence\CheckoutPaymentAPI.Persistence.csproj" />
     <ProjectReference Include="..\..\API\CheckoutPaymentAPI\CheckoutPaymentAPI.csproj" />
-    <ProjectReference Include="..\..\API\Tests\CheckoutPaymentAPI.Tests.Core\CheckoutPaymentAPI.Tests.Core.csproj" />
-    <ProjectReference Include="..\CheckoutPaymentAPI.Client\CheckoutPaymentAPI.Client.csproj" />
+    <ProjectReference Include="..\CheckoutPaymentAPI.Tests.Core\CheckoutPaymentAPI.Tests.Core.csproj" />
   </ItemGroup>
 
 </Project>

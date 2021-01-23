@@ -19,7 +19,7 @@ using CheckoutPaymentAPI.Exceptions;
 namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
 {
     [TestClass]
-    [TestCategory("API - Requests - Commands - ProcessPayment - Handler")]
+    [TestCategory("API - Unit - Commands - ProcessPayment - Handler")]
     public class ProcessPaymentHandlerTests
     {
         private readonly ILogger _logger = new LoggerConfiguration().CreateLogger();
