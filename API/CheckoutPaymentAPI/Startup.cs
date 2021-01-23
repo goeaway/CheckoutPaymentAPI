@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Claims;
@@ -26,6 +27,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -50,7 +52,7 @@ namespace CheckoutPaymentAPI
                     options.KeyName = "X-API-KEY";
                     options.Events = new ApiKeyEvents
                     {
-                        OnValidateKey = async (context) =>
+                        OnValidateKey = (context) => Task.Run(() =>
                         {
                             // validate api key header value
                             // in production this event implemention would make use of some key store
@@ -70,7 +72,7 @@ namespace CheckoutPaymentAPI
                             {
                                 context.NoResult();
                             }
-                        }
+                        })
                     };
                 });
 
@@ -91,7 +93,18 @@ namespace CheckoutPaymentAPI
             services.AddDbContext<CheckoutPaymentAPIContext>(
                 options => options.UseInMemoryDatabase("CheckoutPaymentAPIDatabase"));
 
-            
+            services.AddSwaggerGen(c => {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Version = "v1",
+                    Title = "CheckoutPaymentAPI",
+                    Description = "A checkout payment gateaway",
+                });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -104,6 +117,12 @@ namespace CheckoutPaymentAPI
 
             app.UseHttpsRedirection();
             app.UseExceptionHandler(ExceptionHandler);
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "CheckoutPaymentAPI");
+            });
 
             app.UseRouting();
             app.UseAuthentication();
