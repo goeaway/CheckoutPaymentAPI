@@ -67,7 +67,7 @@ The application is built with ASPNET Core 3.1 and implements a clean architectur
 
 * `CheckoutPaymentAPI` - this is the ASPNET Core web api project which receives requests and provides responses. The project holds Startup code and Controllers to define the endpoints.
 * `CheckoutPaymentAPI.Application` - this is a .NET Core library and contains the handling code for each request.
-* `CheckoutPaymentAPI.Models` - this is another .NET Core library that holds all the models used in the application, such as DTOs, Entites or models used in handlers.
+* `CheckoutPaymentAPI.Models` - this is another .NET Core library that holds all the models used in the application, such as DTOs, Entities or models used in handlers.
 * `CheckoutPaymentAPI.Core` - this library project holds "low level" classes that can be used throughout the application, such as exceptions and an `INowProvider`, which I've utilised to make mocking of `DateTime.Now` easier.
 * `CheckoutPaymentAPI.Persistence` - this library holds the EntityFramework Core Context used by the application
 
