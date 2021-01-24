@@ -101,7 +101,8 @@ I created a separate .net core library to house an API client for the API. This 
 ## Testing
 
 The testing the API is split into three main projects 
-1. `CheckoutPaymentAPI.Tests.Unit` - which holds unit tests for the API project. This ensures validation and the handlers are doing what we want them to.
-2. `CheckoutPaymentAPI.Tests.Integration` - which holds integration test for the API project. This ensures the API is returning the correct response for different requests, such as 401 when not authenticated, or 429 when the same process payment request is sent multiple times.
+1. `CheckoutPaymentAPI.Tests.API.Unit` - which holds unit tests for the API project. This ensures validation and the handlers are doing what we want them to.
+2. `CheckoutPaymentAPI.Tests.API.Integration` - which holds integration tests for the API project. This ensures the API is returning the correct response for different requests, such as 401 when not authenticated, or 429 when the same process payment request is sent multiple times.
 3. `CheckoutPaymentAPI.Tests.Client` - which holds unit tests for the API client project.
 
+The solution also contains `CheckoutPaymentAPI.Tests.Core`, which contains a `Setup` class used by the test projects to create the context and test server
