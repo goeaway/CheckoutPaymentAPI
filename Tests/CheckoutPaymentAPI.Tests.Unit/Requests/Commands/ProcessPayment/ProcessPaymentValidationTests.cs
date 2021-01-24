@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using FluentValidation.TestHelper;
 using System.Linq;
-using CheckoutPaymentAPI.Core.Providers;
+using CheckoutPaymentAPI.Providers;
 
 namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
 {

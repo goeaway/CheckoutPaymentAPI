@@ -5,14 +5,13 @@ using System.Reflection;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AspNetCore.Authentication.ApiKey;
+using CheckoutPaymentAPI.AcquiringBank;
 using CheckoutPaymentAPI.Authentication;
 using CheckoutPaymentAPI.Behaviours;
-using CheckoutPaymentAPI.Core;
-using CheckoutPaymentAPI.Core.Abstractions;
-using CheckoutPaymentAPI.Core.Providers;
 using CheckoutPaymentAPI.Exceptions;
 using CheckoutPaymentAPI.Models.DTOs;
 using CheckoutPaymentAPI.Persistence;
+using CheckoutPaymentAPI.Providers;
 using CheckoutPaymentAPI.Requests.Commands.ProcessPayment;
 using FluentValidation.AspNetCore;
 using MediatR;
@@ -86,7 +85,7 @@ namespace CheckoutPaymentAPI
             services.AddMemoryCache();
             services.AddMediatR(Assembly.GetAssembly(typeof(ProcessPaymentHandler)));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
-            services.AddTransient<IAcquiringBank, AcquiringBank>();
+            services.AddTransient<IAcquiringBank, AcquiringBank.AcquiringBank>();
 
             services.AddSingleton<INowProvider>(new NowProvider());
 

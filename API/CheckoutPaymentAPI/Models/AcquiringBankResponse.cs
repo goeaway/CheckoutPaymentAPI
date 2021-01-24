@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CheckoutPaymentAPI.Core.Models
+namespace CheckoutPaymentAPI.Models
 {
     public class AcquiringBankResponse
     {

@@ -1,5 +1,4 @@
-﻿using CheckoutPaymentAPI.Core.Abstractions;
-using CheckoutPaymentAPI.Exceptions;
+﻿using CheckoutPaymentAPI.Exceptions;
 using CheckoutPaymentAPI.Models.DTOs;
 using CheckoutPaymentAPI.Options;
 using CheckoutPaymentAPI.Persistence;
@@ -14,8 +13,10 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
-using CheckoutPaymentAPI.Core.Models;
+using CheckoutPaymentAPI.Models;
 using System.Security.Cryptography;
+using CheckoutPaymentAPI.AcquiringBank;
+using CheckoutPaymentAPI.Providers;
 
 namespace CheckoutPaymentAPI.Requests.Commands.ProcessPayment
 {

@@ -1,11 +1,10 @@
-﻿using CheckoutPaymentAPI.Core.Abstractions;
-using CheckoutPaymentAPI.Core.Models;
+﻿using CheckoutPaymentAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CheckoutPaymentAPI.Core
+namespace CheckoutPaymentAPI.AcquiringBank
 {
     public class AcquiringBank : IAcquiringBank
     {

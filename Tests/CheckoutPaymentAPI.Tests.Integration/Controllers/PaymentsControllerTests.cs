@@ -12,10 +12,9 @@ using System.Threading.Tasks;
 using CheckoutPaymentAPI.Tests.Core;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text;
-using CheckoutPaymentAPI.Core.Abstractions;
-using CheckoutPaymentAPI.Core.Providers;
 using Moq;
-using CheckoutPaymentAPI.Core.Models;
+using CheckoutPaymentAPI.Models;
+using CheckoutPaymentAPI.AcquiringBank;
 
 namespace CheckoutPaymentAPI.IntegrationTests.Controllers
 {
@@ -23,31 +22,6 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
     [TestCategory("API - Integration - PaymentsController")]
     public class PaymentsControllerTests
     {
-        private (TestServer server, HttpClient client, CheckoutPaymentAPIContext context, Mock<IAcquiringBank> mockBank) SetupServer(INowProvider nowProvider = null)
-        {
-            var context = Setup.CreateContext();
-            var mockBank = new Mock<IAcquiringBank>();
-
-            var server = new TestServer(new WebHostBuilder()
-                .UseStartup<Startup>()
-                .ConfigureTestServices(services =>
-                {
-                    services.AddSingleton(context);
-
-                    if(nowProvider != null)
-                    {
-                        services.AddSingleton(nowProvider);
-                    }
-
-                    services.AddSingleton(mockBank.Object);
-
-                })
-            );
-            var client = server.CreateClient();
-
-            return (server, client, context, mockBank);
-        }
-
         [TestMethod]
         public async Task Returns_200_With_Success_Data_For_Successful_Payment()
         {
@@ -61,8 +35,13 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
             var testNow = new DateTime(2021, 01, 01);
             var EXPIRY = testNow.AddYears(1);
 
-            var nowProvider = new NowProvider(testNow);
-            var (_, client, context, acqBankMock) = SetupServer(nowProvider);
+            var acqBankMock = new Mock<IAcquiringBank>();
+
+            var (_, client, context) = Setup.CreateServer(new Setup.CreateServerOptions
+            {
+                TestNow = testNow,
+                AcquiringBank = acqBankMock.Object
+            });
 
             using (context)
             {
@@ -109,8 +88,13 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
             var testNow = new DateTime(2021, 01, 01);
             var EXPIRY = testNow.AddYears(1);
 
-            var nowProvider = new NowProvider(testNow);
-            var (_, client, context, acqBankMock) = SetupServer(nowProvider);
+            var acqBankMock = new Mock<IAcquiringBank>();
+
+            var (_, client, context) = Setup.CreateServer(new Setup.CreateServerOptions
+            {
+                TestNow = testNow,
+                AcquiringBank = acqBankMock.Object
+            });
 
             using (context)
             {
@@ -154,9 +138,11 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
 
             var testNow = new DateTime(2021, 01, 01);
             var EXPIRY = testNow.AddYears(1);
-
-            var nowProvider = new NowProvider(testNow);
-            var (_, client, context, _) = SetupServer(nowProvider);
+            
+            var (_, client, context) = Setup.CreateServer(new Setup.CreateServerOptions
+            {
+                TestNow = testNow
+            });
 
             using (context)
             {
@@ -198,8 +184,12 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
             var testNow = new DateTime(2022, 01, 01);
             var EXPIRY = testNow.AddYears(1);
 
-            var nowProvider = new NowProvider();
-            var (_, client, context, acqBankMock) = SetupServer(nowProvider);
+            var acqBankMock = new Mock<IAcquiringBank>();
+
+            var (_, client, context) = Setup.CreateServer(new Setup.CreateServerOptions
+            {
+                TestNow = testNow
+            });
 
             using (context)
             {
@@ -246,8 +236,10 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
             var testNow = new DateTime(2022, 01, 01);
             var EXPIRY = testNow.AddYears(1);
 
-            var nowProvider = new NowProvider();
-            var (_, client, context, _) = SetupServer(nowProvider);
+            var (_, client, context) = Setup.CreateServer(new Setup.CreateServerOptions
+            {
+                TestNow = testNow
+            });
 
             using (context)
             {

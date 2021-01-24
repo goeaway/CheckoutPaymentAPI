@@ -21,25 +21,10 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
     [TestCategory("API - Integration - PaymentDetailsController")]
     public class PaymentDetailsControllerTests
     {
-        private (TestServer server, HttpClient client, CheckoutPaymentAPIContext context) SetupServer()
-        {
-            var context = Setup.CreateContext();
-
-            var server = new TestServer(new WebHostBuilder()
-                .UseStartup<Startup>()
-                .ConfigureServices(services =>
-                {
-                    services.AddSingleton(context);
-                }));
-            var client = server.CreateClient();
-            
-            return (server, client, context);
-        }
-
         [TestMethod]
         public async Task Return_404_For_No_Id()
         {
-            var (_, client, _) = SetupServer();
+            var (_, client, _) = Setup.CreateServer();
 
             var response = await client.GetAsync("/paymentdetails");
 
@@ -58,7 +43,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
             const bool PAYMENT_RESULT = true;
             var EXPIRY = new DateTime(2021, 01, 01);
 
-            var (_, client, context) = SetupServer();
+            var (_, client, context) = Setup.CreateServer();
 
             using (context)
             {
@@ -105,7 +90,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
             const string OWNER = "CheckoutPaymentAPIClient";
             var EXPIRY = new DateTime(2021, 01, 01);
 
-            var (_, client, context) = SetupServer();
+            var (_, client, context) = Setup.CreateServer();
 
             using (context)
             {
@@ -145,7 +130,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
         {
             const int PAYMENT_ID = 1;
 
-            var (_, client, _) = SetupServer();
+            var (_, client, _) = Setup.CreateServer();
 
             client.DefaultRequestHeaders.Add("X-API-KEY", "CheckoutPaymentAPI-Q2hlY2tvdXRQYXltZW50QVBJ");
             var response = await client.GetAsync($"/paymentdetails/{PAYMENT_ID}");
@@ -171,7 +156,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
             const string OWNER = "DUMMY CLIENT";
             var EXPIRY = new DateTime(2021, 01, 01);
 
-            var (_, client, context) = SetupServer();
+            var (_, client, context) = Setup.CreateServer();
 
             using (context)
             {
@@ -201,7 +186,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
         {
             const int PAYMENT_ID = 1;
 
-            var (_, client, context) = SetupServer();
+            var (_, client, context) = Setup.CreateServer();
 
             using (context)
             {

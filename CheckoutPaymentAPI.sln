@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI", "API\C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI.Tests.Unit", "Tests\CheckoutPaymentAPI.Tests.Unit\CheckoutPaymentAPI.Tests.Unit.csproj", "{7BF67BC8-5EF7-4C8C-BEBC-4CC36AB5D7CF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI.Core", "API\CheckoutPaymentAPI.Core\CheckoutPaymentAPI.Core.csproj", "{B551E0A9-8AB9-4297-A6EF-96DFFD03F757}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI.Persistence", "API\CheckoutPaymentAPI.Persistence\CheckoutPaymentAPI.Persistence.csproj", "{65E29BAB-FABF-41F6-9245-C06566947B10}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI.Tests.Integration", "Tests\CheckoutPaymentAPI.Tests.Integration\CheckoutPaymentAPI.Tests.Integration.csproj", "{7853FAC5-BA90-46BE-A317-400F7B5BC36A}"
@@ -21,9 +19,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API", "API", "{FBFA262F-653
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{B9EDA7E4-1F74-47DB-9E3E-4E05E6F4FE3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckoutPaymentAPI.Client", "Client\CheckoutPaymentAPI.Client\CheckoutPaymentAPI.Client.csproj", "{EBBC772A-2D2F-4C97-B7F2-C967782FFE23}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI.Client", "Client\CheckoutPaymentAPI.Client\CheckoutPaymentAPI.Client.csproj", "{EBBC772A-2D2F-4C97-B7F2-C967782FFE23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckoutPaymentAPI.Tests.Client", "Tests\CheckoutPaymentAPI.Tests.Client\CheckoutPaymentAPI.Tests.Client.csproj", "{15F559FD-399F-4884-8307-811C77950FBF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI.Tests.Client", "Tests\CheckoutPaymentAPI.Tests.Client\CheckoutPaymentAPI.Tests.Client.csproj", "{15F559FD-399F-4884-8307-811C77950FBF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,10 +37,6 @@ Global
 		{7BF67BC8-5EF7-4C8C-BEBC-4CC36AB5D7CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7BF67BC8-5EF7-4C8C-BEBC-4CC36AB5D7CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7BF67BC8-5EF7-4C8C-BEBC-4CC36AB5D7CF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B551E0A9-8AB9-4297-A6EF-96DFFD03F757}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B551E0A9-8AB9-4297-A6EF-96DFFD03F757}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B551E0A9-8AB9-4297-A6EF-96DFFD03F757}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B551E0A9-8AB9-4297-A6EF-96DFFD03F757}.Release|Any CPU.Build.0 = Release|Any CPU
 		{65E29BAB-FABF-41F6-9245-C06566947B10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{65E29BAB-FABF-41F6-9245-C06566947B10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65E29BAB-FABF-41F6-9245-C06566947B10}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -70,7 +64,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{FF1EB2C9-79DD-4166-A200-A4DF7521B9A8} = {FBFA262F-6532-4E73-AC9C-A0A3BDB9C34C}
 		{7BF67BC8-5EF7-4C8C-BEBC-4CC36AB5D7CF} = {E1200726-547F-44E4-983C-BC8C29B91B0E}
-		{B551E0A9-8AB9-4297-A6EF-96DFFD03F757} = {FBFA262F-6532-4E73-AC9C-A0A3BDB9C34C}
 		{65E29BAB-FABF-41F6-9245-C06566947B10} = {FBFA262F-6532-4E73-AC9C-A0A3BDB9C34C}
 		{7853FAC5-BA90-46BE-A317-400F7B5BC36A} = {E1200726-547F-44E4-983C-BC8C29B91B0E}
 		{D25EDE4B-7617-4996-9269-0DA65F0B3675} = {E1200726-547F-44E4-983C-BC8C29B91B0E}

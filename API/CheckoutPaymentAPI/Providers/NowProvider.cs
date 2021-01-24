@@ -1,9 +1,8 @@
-﻿using CheckoutPaymentAPI.Core.Abstractions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CheckoutPaymentAPI.Core.Providers
+namespace CheckoutPaymentAPI.Providers
 {
     public class NowProvider : INowProvider
     {

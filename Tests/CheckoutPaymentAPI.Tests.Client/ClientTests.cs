@@ -1,15 +1,9 @@
-using CheckoutPaymentAPI.Persistence;
 using CheckoutPaymentAPI.Tests.Core;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using CheckoutPaymentAPI.Client;
 using System;
 using CheckoutPaymentAPI.Persistence.Models;
-using CheckoutPaymentAPI.Core.Providers;
 
 namespace CheckoutPaymentAPI.Tests.Client
 {
@@ -19,25 +13,6 @@ namespace CheckoutPaymentAPI.Tests.Client
     {
         private const string API_KEY = "CheckoutPaymentAPI-Q2hlY2tvdXRQYXltZW50QVBJ";
         private const string API_KEY_OWNER = "CheckoutPaymentAPIClient";
-
-        private (TestServer, HttpClient, CheckoutPaymentAPIContext) SetupServer(DateTime? now = null)
-        {
-            var context = Setup.CreateContext();
-
-            var server = new TestServer(new WebHostBuilder()
-                .UseStartup<Startup>()
-                .ConfigureServices(services =>
-                {
-                    services.AddSingleton(context);
-
-                    if(now.HasValue)
-                    {
-                        services.AddSingleton(new NowProvider(now.Value));
-                    }
-                }));
-            var client = server.CreateClient();
-            return (server, client, context);
-        }
 
         [TestMethod]
         public async Task ProcessPayment_Can_Process()
@@ -49,7 +24,10 @@ namespace CheckoutPaymentAPI.Tests.Client
             var testNow = new DateTime(2021, 01, 01);
             var EXPIRY = testNow.AddYears(1);
 
-            var (_, client, context) = SetupServer(testNow);
+            var (_, client, context) = Setup.CreateServer(new Setup.CreateServerOptions
+            {
+                TestNow = testNow
+            });
 
             var apiClient = new APIClient(client, API_KEY);
 
@@ -83,7 +61,10 @@ namespace CheckoutPaymentAPI.Tests.Client
             var testNow = new DateTime(2021, 01, 01);
             var EXPIRY = testNow.AddYears(1);
 
-            var (_, client, _) = SetupServer(testNow);
+            var (_, client, _) = Setup.CreateServer(new Setup.CreateServerOptions
+            {
+                TestNow = testNow
+            });
 
             var apiClient = new APIClient(client, "WRONG API KEY");
 
@@ -109,7 +90,10 @@ namespace CheckoutPaymentAPI.Tests.Client
             var testNow = new DateTime(2021, 01, 01);
             var EXPIRY = testNow.AddYears(1);
 
-            var (_, client, _) = SetupServer();
+            var (_, client, _) = Setup.CreateServer(new Setup.CreateServerOptions
+            {
+                TestNow = testNow
+            });
 
             var apiClient = new APIClient(client, API_KEY);
 
@@ -131,7 +115,10 @@ namespace CheckoutPaymentAPI.Tests.Client
             var testNow = new DateTime(2021, 01, 01);
             var EXPIRY = testNow.AddYears(1);
 
-            var (_, client, _) = SetupServer();
+            var (_, client, _) = Setup.CreateServer(new Setup.CreateServerOptions
+            {
+                TestNow = testNow
+            });
 
             var apiClient = new APIClient(client, API_KEY);
 
@@ -153,7 +140,10 @@ namespace CheckoutPaymentAPI.Tests.Client
             var testNow = new DateTime(2021, 01, 01);
             var EXPIRY = testNow.AddYears(1);
 
-            var (_, client, _) = SetupServer();
+            var (_, client, _) = Setup.CreateServer(new Setup.CreateServerOptions
+            {
+                TestNow = testNow
+            });
 
             var apiClient = new APIClient(client, API_KEY);
 
@@ -178,7 +168,10 @@ namespace CheckoutPaymentAPI.Tests.Client
             var EXPIRY = testNow.AddYears(1);
             const bool PAYMENT_RESULT = true;
 
-            var (_, client, context) = SetupServer(testNow);
+            var (_, client, context) = Setup.CreateServer(new Setup.CreateServerOptions
+            {
+                TestNow = testNow
+            });
 
             using (context)
             {
@@ -218,7 +211,7 @@ namespace CheckoutPaymentAPI.Tests.Client
         {
             const int PAYMENT_ID = 1;
 
-            var (_, client, _) = SetupServer();
+            var (_, client, _) = Setup.CreateServer();
 
             var apiClient = new APIClient(client, API_KEY);
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Text;
 
-namespace CheckoutPaymentAPI.Core.Exceptions
+namespace CheckoutPaymentAPI.Exceptions
 {
     public class CheckoutPaymentAPIException : Exception
     {
