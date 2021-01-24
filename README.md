@@ -65,9 +65,9 @@ A successful request will return a response in the below format, where the `card
 
 The application is built with ASPNET Core 3.1 and utilises the Mediatr nuget package to provide a CQRS style architecture. 
 
-I used EntityFrameworkCore to manage storage of data, although at this time the application only uses an InMemoryDatabase. EntityFrameworkCore makes swapping out different database providers quite easy, so it shouldn't be too difficult to use a SQL Server database or similar. The main reason to use InMemoryDatabase was to simplify the application.
+I used EntityFrameworkCore to manage storage of data, although at this time the application only uses an InMemoryDatabase. EntityFrameworkCore makes swapping out different database providers quite easy, so replacing the in memory database usage with a SQL Server one, for example, would be easy to do. The main reason I used InMemoryDatabase was to simplify the application.
 
-To validate requests, I used the FluentValidation nuget package, which goes nicely with Mediatr and can slotted into the Mediatr pipeline by using behaviours. This package makes managing validations on models really easy and can be easily tested in isolation. I added validation to ensure each part of the process payment request is present. I added further validation to ensure:
+To validate requests, I used the FluentValidation nuget package, which goes nicely with Mediatr and can be slotted into the Mediatr pipeline by using behaviours. This package makes managing validations on models really easy and can be easily tested in isolation. I added validation to ensure each part of the process payment request is present. I added further validation to ensure:
 * The card number is a valid card number (validation provided by FluentValidation)
 * The CVV is 3 digits long, from information I found online, all CVVs these days are 3 digits long
 * The expiry is not in the past. I chose to represent the expiry as a full date instead of just Month/Year, because I was unsure if the expiry is always represented like this. At present, the validation could fail for a valid date if the current date is newer than the expiry, even if they're in the same month. Going forward, it may be better to represent the expiry as Month/Year. I know for my card at least, it doesn't expire until the last day of the month.
