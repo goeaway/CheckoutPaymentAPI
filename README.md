@@ -122,3 +122,13 @@ The testing the API is split into three main projects
 3. `CheckoutPaymentAPI.Tests.Client` - which holds unit tests for the API client project.
 
 The solution also contains `CheckoutPaymentAPI.Tests.Core`, which contains a `Setup` class used by the test projects to create the context and test server
+
+## Future Changes
+
+As mentioned earlier. The application uses an in memory cache and an in memory database. The first step I would take in order to improve it would be to change these into implementations can can be separated from the application, to make it easier to scale the API application separately if it needs to. As the application can be deployed in a docker container, I'd add containers for the DB and cache as well, and then I could manage them all much easier. 
+
+As well as that an actual implementation for the acquiring bank would be needed. In this application, this is represented as an interface whose implementation can be easily swapped in and out. So a new derived class that actually interacts with a real bank would be needed. This would only require adding the new implementation, then updating the Startup class in the `CheckoutPaymentAPI` project to use that instead of the current class.
+
+When running in production, we may want to log events to somewhere other than a file on disk. Serilog has many options where the events can be logged to, such as AWSCloudWatch. We can easily choose which "sink" (or sinks) we log to in the startup class.
+
+Finally, I'd update the authentication system to not have hardcoded api keys in the code. I'd probably store the keys in the database, but would load them into a secret manager on startup to access them easier while the API is running.
