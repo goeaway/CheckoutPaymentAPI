@@ -29,8 +29,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI.Applicat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CheckoutPaymentAPI.Models", "API\CheckoutPaymentAPI.Models\CheckoutPaymentAPI.Models.csproj", "{98C01FB1-850F-41E7-B35A-8131AEBA70C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CheckoutPaymentAPI.Tests.API.Performance", "CheckoutPaymentAPI.Tests.API.Performance\CheckoutPaymentAPI.Tests.API.Performance.csproj", "{82DD959B-289F-4BDC-A0A6-AA99320DE799}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,10 +75,6 @@ Global
 		{98C01FB1-850F-41E7-B35A-8131AEBA70C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98C01FB1-850F-41E7-B35A-8131AEBA70C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{98C01FB1-850F-41E7-B35A-8131AEBA70C9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{82DD959B-289F-4BDC-A0A6-AA99320DE799}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{82DD959B-289F-4BDC-A0A6-AA99320DE799}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{82DD959B-289F-4BDC-A0A6-AA99320DE799}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{82DD959B-289F-4BDC-A0A6-AA99320DE799}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -96,7 +90,6 @@ Global
 		{09435BDE-7511-4C45-A2C4-175CA975F3F2} = {FBFA262F-6532-4E73-AC9C-A0A3BDB9C34C}
 		{E4A08016-FBFB-4717-85BF-CD56EA9CC77F} = {FBFA262F-6532-4E73-AC9C-A0A3BDB9C34C}
 		{98C01FB1-850F-41E7-B35A-8131AEBA70C9} = {FBFA262F-6532-4E73-AC9C-A0A3BDB9C34C}
-		{82DD959B-289F-4BDC-A0A6-AA99320DE799} = {E1200726-547F-44E4-983C-BC8C29B91B0E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9F38764D-D0F5-4DEE-AB8C-9DF716FC85DF}
