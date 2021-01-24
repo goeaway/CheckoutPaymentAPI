@@ -9,7 +9,7 @@ The project consists of an ASPNET Core web api, running on .net core 3.1, and a 
 Clone the repo, then pick one of the below options
 
 1. The API can be run in a docker container, follow instructions [here](https://github.com/goeaway/CheckoutPaymentAPI/blob/master/Deploy/README.md) to do so. 
-2. Open the solution in VS2019 and run from there.
+2. Open the solution in VS2019 and run the `CheckoutPaymentAPI` project from there.
 
 It's best to use an application like Postman to interact with the API. When interacting with the API, add an `X-API-KEY` header to each request with either of the below keys:
 
