@@ -7,25 +7,26 @@ using System.Threading.Tasks;
 
 namespace CheckoutPaymentAPI.Client
 {
-    public class APIClient : IAPIClient
+    public class ApiClient : IApiClient
     {
         private readonly HttpClient _client;
 
-        public APIClient(HttpClient client, string apiKey)
+        public ApiClient(HttpClient client, string apiKey)
         {
-            _client = client;
+            _client = client ?? throw new ArgumentNullException(nameof(client));
             _client.DefaultRequestHeaders.Add("X-API-Key", apiKey);
         }
 
-        public APIClient(string apiKey) : this (new HttpClient { BaseAddress = new Uri("https://localhost:44346/") }, apiKey)
+        public ApiClient(string apiKey) : this (new HttpClient { BaseAddress = new Uri("http://localhost:8080/") }, apiKey)
         {
         }
 
-        public async Task<ClientResponse<GetPaymentDetailsResponse>> GetPaymentDetails(int paymentId)
+        public async Task<ApiResponse<GetPaymentDetailsResponse>> GetPaymentDetails(int paymentId)
         {
+            // make request using http client
             var response = await _client.GetAsync($"/paymentdetails/{paymentId}");
 
-            var clientResponse = new ClientResponse<GetPaymentDetailsResponse>
+            var clientResponse = new ApiResponse<GetPaymentDetailsResponse>
             {
                 StatusCode = response.StatusCode
             };
@@ -39,19 +40,19 @@ namespace CheckoutPaymentAPI.Client
             }
             else
             {
-                clientResponse.Error = JsonConvert.DeserializeObject<ClientError>(responseContent);
+                clientResponse.Error = JsonConvert.DeserializeObject<ApiError>(responseContent);
             }
 
             return clientResponse;
 
         }
 
-        public async Task<ClientResponse<ProcessPaymentResponse>> ProcessPayment(
+        public async Task<ApiResponse<ProcessPaymentResponse>> ProcessPayment(
             string cardNumber, 
+            string cvv,
             DateTime expiry, 
             decimal amount, 
-            string currency, 
-            string cvv)
+            string currency)
         {
             if(cardNumber == null)
             {
@@ -79,7 +80,7 @@ namespace CheckoutPaymentAPI.Client
 
             var response = await _client.PostAsync("/payments/process", content);
             
-            var clientResponse = new ClientResponse<ProcessPaymentResponse>
+            var clientResponse = new ApiResponse<ProcessPaymentResponse>
             {
                 StatusCode = response.StatusCode
             };
@@ -93,7 +94,7 @@ namespace CheckoutPaymentAPI.Client
             }
             else
             {
-                clientResponse.Error = JsonConvert.DeserializeObject<ClientError>(responseContent);
+                clientResponse.Error = JsonConvert.DeserializeObject<ApiError>(responseContent);
             }
 
             return clientResponse;

@@ -1,14 +1,10 @@
-﻿using CheckoutPaymentAPI.Exceptions;
-using CheckoutPaymentAPI.Persistence;
-using CheckoutPaymentAPI.Persistence.Models;
-using CheckoutPaymentAPI.Requests.Queries.GetPaymentDetails;
+﻿using CheckoutPaymentAPI.Application.Exceptions;
+using CheckoutPaymentAPI.Application.Requests.Queries.GetPaymentDetails;
+using CheckoutPaymentAPI.Models.Entities;
 using CheckoutPaymentAPI.Tests.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 using Serilog;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 

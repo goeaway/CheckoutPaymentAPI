@@ -1,17 +1,17 @@
-﻿using CheckoutPaymentAPI.Requests.Commands.ProcessPayment;
-using CheckoutPaymentAPI.Tests.Core;
+﻿using CheckoutPaymentAPI.Tests.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using CheckoutPaymentAPI.Models;
-using CheckoutPaymentAPI.Options;
 using Microsoft.Extensions.Caching.Memory;
 using Serilog;
-using CheckoutPaymentAPI.Exceptions;
-using CheckoutPaymentAPI.AcquiringBank;
-using CheckoutPaymentAPI.Providers;
+using CheckoutPaymentAPI.Application.Options;
+using CheckoutPaymentAPI.Core.Providers;
+using CheckoutPaymentAPI.Application.Requests.Commands.ProcessPayment;
+using CheckoutPaymentAPI.Application.AcquiringBank;
+using CheckoutPaymentAPI.Models.AcquiringBank;
+using CheckoutPaymentAPI.Application.Exceptions;
 
 namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
 {

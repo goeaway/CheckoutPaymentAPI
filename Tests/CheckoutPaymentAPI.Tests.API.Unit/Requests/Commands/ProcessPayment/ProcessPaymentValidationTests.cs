@@ -1,11 +1,9 @@
-﻿using CheckoutPaymentAPI.Requests.Commands.ProcessPayment;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using FluentValidation.TestHelper;
 using System.Linq;
-using CheckoutPaymentAPI.Providers;
+using CheckoutPaymentAPI.Application.Requests.Commands.ProcessPayment;
+using CheckoutPaymentAPI.Core.Providers;
 
 namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
 {
@@ -71,6 +69,18 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
 
             Assert.AreEqual(1, failures.Count());
             Assert.AreEqual("CVV required", failures.First().ErrorMessage);
+        }
+
+        [TestMethod]
+        public void Fails_No_Owner()
+        {
+            var request = new ProcessPaymentRequest();
+            var nowProvider = new NowProvider();
+            var validator = new ProcessPaymentValidator(nowProvider);
+            var failures = validator.ShouldHaveValidationErrorFor(r => r.Owner, request);
+
+            Assert.AreEqual(1, failures.Count());
+            Assert.AreEqual("Owner required", failures.First().ErrorMessage);
         }
 
         [TestMethod]
@@ -234,6 +244,18 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
             var nowProvider = new NowProvider();
             var validator = new ProcessPaymentValidator(nowProvider);
             validator.ShouldNotHaveValidationErrorFor(r => r.CVV, request);
+        }
+
+        [TestMethod]
+        public void Passes_Owner()
+        {
+            var request = new ProcessPaymentRequest
+            {
+                Owner = "Owner"
+            };
+            var nowProvider = new NowProvider();
+            var validator = new ProcessPaymentValidator(nowProvider);
+            validator.ShouldNotHaveValidationErrorFor(r => r.Owner, request);
         }
     }
 }

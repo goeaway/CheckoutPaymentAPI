@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\API\CheckoutPaymentAPI.Persistence\CheckoutPaymentAPI.Persistence.csproj" />
     <ProjectReference Include="..\..\Client\CheckoutPaymentAPI.Client\CheckoutPaymentAPI.Client.csproj" />
     <ProjectReference Include="..\CheckoutPaymentAPI.Tests.Core\CheckoutPaymentAPI.Tests.Core.csproj" />
   </ItemGroup>

@@ -1,11 +1,11 @@
-﻿using CheckoutPaymentAPI.Persistence.Models;
+﻿using CheckoutPaymentAPI.Models.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace CheckoutPaymentAPI.Persistence
 {
+    /// <summary>
+    /// Entity Framework Core context for the application
+    /// </summary>
     public class CheckoutPaymentAPIContext : DbContext
     {
         public CheckoutPaymentAPIContext(DbContextOptions<CheckoutPaymentAPIContext> options) : base(options)
@@ -13,6 +13,9 @@ namespace CheckoutPaymentAPI.Persistence
 
         }
 
+        /// <summary>
+        /// Gets or sets processed payments
+        /// </summary>
         public DbSet<ProcessedPayment> ProcessedPayments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

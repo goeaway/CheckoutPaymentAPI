@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
+using CheckoutPaymentAPI.Application.Requests.Queries.GetPaymentDetails;
 using CheckoutPaymentAPI.Models.DTOs;
-using CheckoutPaymentAPI.Requests.Queries.GetPaymentDetails;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

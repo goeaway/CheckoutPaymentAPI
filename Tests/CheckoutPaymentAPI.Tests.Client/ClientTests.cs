@@ -3,7 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
 using CheckoutPaymentAPI.Client;
 using System;
-using CheckoutPaymentAPI.Persistence.Models;
+using CheckoutPaymentAPI.Models.Entities;
 
 namespace CheckoutPaymentAPI.Tests.Client
 {
@@ -29,14 +29,14 @@ namespace CheckoutPaymentAPI.Tests.Client
                 TestNow = testNow
             });
 
-            var apiClient = new APIClient(client, API_KEY);
+            var apiClient = new ApiClient(client, API_KEY);
 
             var response = await apiClient.ProcessPayment(
                 CARD_NUMBER,
+                CVV,
                 EXPIRY,
                 AMOUNT,
-                CURRENCY,
-                CVV
+                CURRENCY
             );
 
             Assert.AreEqual(200, (int)response.StatusCode);
@@ -66,14 +66,14 @@ namespace CheckoutPaymentAPI.Tests.Client
                 TestNow = testNow
             });
 
-            var apiClient = new APIClient(client, "WRONG API KEY");
+            var apiClient = new ApiClient(client, "WRONG API KEY");
 
             var response = await apiClient.ProcessPayment(
                 CARD_NUMBER,
+                CVV,
                 EXPIRY,
                 AMOUNT,
-                CURRENCY,
-                CVV
+                CURRENCY
             );
 
             Assert.AreEqual(401, (int)response.StatusCode);
@@ -95,15 +95,15 @@ namespace CheckoutPaymentAPI.Tests.Client
                 TestNow = testNow
             });
 
-            var apiClient = new APIClient(client, API_KEY);
+            var apiClient = new ApiClient(client, API_KEY);
 
             await Assert
                 .ThrowsExceptionAsync<ArgumentNullException>(
-                    () => apiClient.ProcessPayment(null, 
+                    () => apiClient.ProcessPayment(null,
+                        CVV,
                         EXPIRY,
                         AMOUNT,
-                        CURRENCY,
-                        CVV));
+                        CURRENCY));
         }
 
         [TestMethod]
@@ -120,15 +120,15 @@ namespace CheckoutPaymentAPI.Tests.Client
                 TestNow = testNow
             });
 
-            var apiClient = new APIClient(client, API_KEY);
+            var apiClient = new ApiClient(client, API_KEY);
 
             await Assert
                 .ThrowsExceptionAsync<ArgumentNullException>(
                     () => apiClient.ProcessPayment(CARD_NUMBER,
+                        CVV,
                         EXPIRY,
                         AMOUNT,
-                        null,
-                        CVV));
+                        null));
         }
 
         [TestMethod]
@@ -145,15 +145,15 @@ namespace CheckoutPaymentAPI.Tests.Client
                 TestNow = testNow
             });
 
-            var apiClient = new APIClient(client, API_KEY);
+            var apiClient = new ApiClient(client, API_KEY);
 
             await Assert
                 .ThrowsExceptionAsync<ArgumentNullException>(
                     () => apiClient.ProcessPayment(CARD_NUMBER,
+                        null,
                         EXPIRY,
                         AMOUNT,
-                        CURRENCY,
-                        null));
+                        CURRENCY));
         }
 
         [TestMethod]
@@ -190,7 +190,7 @@ namespace CheckoutPaymentAPI.Tests.Client
 
                 context.SaveChanges();
 
-                var apiClient = new APIClient(client, API_KEY);
+                var apiClient = new ApiClient(client, API_KEY);
 
                 var response = await apiClient.GetPaymentDetails(PAYMENT_ID);
 
@@ -213,7 +213,7 @@ namespace CheckoutPaymentAPI.Tests.Client
 
             var (_, client, _) = Setup.CreateServer();
 
-            var apiClient = new APIClient(client, API_KEY);
+            var apiClient = new ApiClient(client, API_KEY);
 
             var response = await apiClient.GetPaymentDetails(PAYMENT_ID);
 

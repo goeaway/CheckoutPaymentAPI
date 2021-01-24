@@ -1,10 +1,7 @@
-﻿using CheckoutPaymentAPI.Requests.Queries.GetPaymentDetails;
+﻿using CheckoutPaymentAPI.Application.Requests.Queries.GetPaymentDetails;
 using FluentValidation.TestHelper;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace CheckoutPaymentAPI.Tests.Requests.Queries.GetPaymentDetails
 {
@@ -24,6 +21,17 @@ namespace CheckoutPaymentAPI.Tests.Requests.Queries.GetPaymentDetails
         }
 
         [TestMethod]
+        public void Fail_No_Owner()
+        {
+            var request = new GetPaymentDetailsRequest();
+            var validator = new GetPaymentDetailsValidator();
+            var failures = validator.ShouldHaveValidationErrorFor(r => r.Owner, request);
+
+            Assert.AreEqual(1, failures.Count());
+            Assert.AreEqual("Owner required", failures.First().ErrorMessage);
+        }
+
+        [TestMethod]
         public void Pass_Has_Payment_Id()
         {
             var request = new GetPaymentDetailsRequest 
@@ -32,6 +40,18 @@ namespace CheckoutPaymentAPI.Tests.Requests.Queries.GetPaymentDetails
             };
             var validator = new GetPaymentDetailsValidator();
             validator.ShouldNotHaveValidationErrorFor(r => r.PaymentId, request);
+        }
+
+        [TestMethod]
+        public void Pass_Has_Owner()
+        {
+            var request = new GetPaymentDetailsRequest
+            {
+                Owner = "owner"
+            };
+
+            var validator = new GetPaymentDetailsValidator();
+            validator.ShouldNotHaveValidationErrorFor(r => r.Owner, request);
         }
     }
 }

@@ -1,14 +1,12 @@
-﻿using CheckoutPaymentAPI.AcquiringBank;
+﻿using CheckoutPaymentAPI.Application.AcquiringBank;
+using CheckoutPaymentAPI.Core.Providers;
 using CheckoutPaymentAPI.Persistence;
-using CheckoutPaymentAPI.Providers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 
 namespace CheckoutPaymentAPI.Tests.Core
 {

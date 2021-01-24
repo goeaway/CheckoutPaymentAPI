@@ -1,20 +1,14 @@
 ﻿using CheckoutPaymentAPI.Models.DTOs;
-using CheckoutPaymentAPI.Persistence;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using CheckoutPaymentAPI.Tests.Core;
-using Microsoft.Extensions.DependencyInjection;
 using System.Text;
 using Moq;
-using CheckoutPaymentAPI.Models;
-using CheckoutPaymentAPI.AcquiringBank;
+using CheckoutPaymentAPI.Application.AcquiringBank;
+using CheckoutPaymentAPI.Models.AcquiringBank;
 
 namespace CheckoutPaymentAPI.IntegrationTests.Controllers
 {

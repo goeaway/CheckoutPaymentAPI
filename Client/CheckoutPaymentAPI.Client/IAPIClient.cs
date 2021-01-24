@@ -6,16 +6,33 @@ using System.Threading.Tasks;
 
 namespace CheckoutPaymentAPI.Client
 {
-    public interface IAPIClient
+    /// <summary>
+    /// Process payments and get payment details
+    /// </summary>
+    public interface IApiClient
     {
-        Task<ClientResponse<ProcessPaymentResponse>> ProcessPayment(
+        /// <summary>
+        /// Process a new payment
+        /// </summary>
+        /// <param name="cardNumber">The card number to be used in the payment</param>
+        /// <param name="expiry">The expiry of the card</param>
+        /// <param name="amount">The amount the payment is for</param>
+        /// <param name="currency">The ISO 4217 currency code of the currency the payment is made in</param>
+        /// <param name="cvv">The CVV security code of the card</param>
+        /// <returns></returns>
+        Task<ApiResponse<ProcessPaymentResponse>> ProcessPayment(
             string cardNumber, 
+            string cvv,
             DateTime expiry,
             decimal amount,
-            string currency,
-            string cvv
+            string currency
         );
 
-        Task<ClientResponse<GetPaymentDetailsResponse>> GetPaymentDetails(int paymentId);
+        /// <summary>
+        /// Get payment details of a previously processed payment
+        /// </summary>
+        /// <param name="paymentId">The id of the payment</param>
+        /// <returns></returns>
+        Task<ApiResponse<GetPaymentDetailsResponse>> GetPaymentDetails(int paymentId);
     }
 }

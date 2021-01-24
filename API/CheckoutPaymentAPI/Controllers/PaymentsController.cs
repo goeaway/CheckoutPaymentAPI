@@ -1,11 +1,10 @@
 ﻿using System.Threading.Tasks;
+using CheckoutPaymentAPI.Application.Requests.Commands.ProcessPayment;
 using CheckoutPaymentAPI.Models.DTOs;
-using CheckoutPaymentAPI.Requests.Commands.ProcessPayment;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace CheckoutPaymentAPI.Controllers
 {
