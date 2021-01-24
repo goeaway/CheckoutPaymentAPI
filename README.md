@@ -18,7 +18,7 @@ It's best to use an application like Postman to interact with the API. When inte
 
 ## Endpoints
 
-The API utilises swagger to document the possible endpoints of the API, go to `/swagger` to see info on each endpoint.
+The API utilises swagger to document the possible endpoints of the API, go to `/swagger` while the API is running to see info on each endpoint.
 
 #### `POST` `Payments/process`
 
