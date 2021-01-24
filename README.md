@@ -63,7 +63,15 @@ A successful request will return a response in the below format, where the `card
 
 ## About the API
 
-The application is built with ASPNET Core 3.1 and utilises the Mediatr nuget package to provide a CQRS style architecture. 
+The application is built with ASPNET Core 3.1 and implements a clean architecture style. The API is split into 5 projects:
+
+* `CheckoutPaymentAPI` - this is the ASPNET Core web api project which receives requests and provides responses. The project holds Startup code and Controllers to define the endpoints.
+* `CheckoutPaymentAPI.Application` - this is a .NET Core library and contains the handling code for each request.
+* `CheckoutPaymentAPI.Models` - this is another .NET Core library that holds all the models used in the application, such as DTOs, Entites or models used in handlers.
+* `CheckoutPaymentAPI.Core` - this library project holds "low level" classes that can be used throughout the application, such as exceptions and an `INowProvider`, which I've utilised to make mocking of `DateTime.Now` easier.
+* `CheckoutPaymentAPI.Persistence` - this library holds the EntityFramework Core Context used by the application
+
+The `CheckoutPaymentAPI.Application` project uses a library called Mediatr to implement a CQRS style architecture, where commands and queries are split up. This architecture makes it really easy to add new request flows, as each one is separate from the others and won't be affected by new ones being added. In my API, each request has its own folder, with a request object to hold data about the request, a handler which will receive the request object and return a response, and a validator that ensures the request object is in a particular state. Setting up the API this way also makes it really easy to decouple the implementations from the ASPNET Core controllers, which makes testing a lot easier and means we could change to a different way of setting up the API in future.
 
 I used EntityFrameworkCore to manage storage of data, although at this time the application only uses an InMemoryDatabase. EntityFrameworkCore makes swapping out different database providers quite easy, so replacing the in memory database usage with a SQL Server one, for example, would be easy to do. The main reason I used InMemoryDatabase was to simplify the application.
 
