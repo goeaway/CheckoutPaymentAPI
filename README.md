@@ -131,4 +131,6 @@ As well as that an actual implementation for the acquiring bank would be needed.
 
 When running in production, we may want to log events to somewhere other than a file on disk. Serilog has many options where the events can be logged to, such as AWSCloudWatch. We can easily choose which "sink" (or sinks) we log to in the startup class.
 
-Finally, I'd update the authentication system to not have hardcoded api keys in the code. I'd probably store the keys in the database, but would load them into a secret manager on startup to access them easier while the API is running.
+I'd also update the authentication system to not have hardcoded api keys in the code. I'd probably store the keys in the database, but would load them into a secret manager on startup to access them easier while the API is running.
+
+I considered trying to implement an EventSourcing architecture to store changes to data in an event log instead of just the latest version of the data. I would be more inclined to do this if the API had a requirement to allow existing data to be updated, but I felt for the current requirements this wasn't needed, as no data is overwritten at all. If new requirements were to come in for this API to allow for something like that. I'd definitely revisit the possibilty of adding EventSourcing.
