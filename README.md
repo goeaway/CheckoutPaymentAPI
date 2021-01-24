@@ -116,7 +116,7 @@ In its current state, a couple of changes should be made first however.
 
 ## Testing
 
-The testing the API is split into three main projects 
+The testing of the API is split into three main projects 
 1. `CheckoutPaymentAPI.Tests.API.Unit` - which holds unit tests for the API project. This ensures validation and the handlers are doing what we want them to.
 2. `CheckoutPaymentAPI.Tests.API.Integration` - which holds integration tests for the API project. This ensures the API is returning the correct response for different requests, such as 401 when not authenticated, or 429 when the same process payment request is sent multiple times.
 3. `CheckoutPaymentAPI.Tests.Client` - which holds unit tests for the API client project.
