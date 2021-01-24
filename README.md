@@ -121,7 +121,19 @@ The testing the API is split into three main projects
 2. `CheckoutPaymentAPI.Tests.API.Integration` - which holds integration tests for the API project. This ensures the API is returning the correct response for different requests, such as 401 when not authenticated, or 429 when the same process payment request is sent multiple times.
 3. `CheckoutPaymentAPI.Tests.Client` - which holds unit tests for the API client project.
 
-The solution also contains `CheckoutPaymentAPI.Tests.Core`, which contains a `Setup` class used by the test projects to create the context and test server
+The solution also contains `CheckoutPaymentAPI.Tests.Core`, which contains a `Setup` class used by the test projects to create the context and test server.
+
+Within the `CheckoutPaymentAPI.Tests.API.Unit` project, I split the tests up between the two different features (processing payments and getting details) and subdivided into tests that ensure the handler is working correctly, and tests that ensure validation is working.
+
+When writing tests, I like to follow the Arrange, Act, Assert principle to ensure my tests follow a known pattern. I also try to stick to having a single Assert statement per test, although I'm willing to add a few extras if it makes sense (such as when testing all the properties of a returned object are correct).
+
+I also aim to avoid writing logic into tests, such as loops and if statements. Ideally, each test will just call a single method, and then assert the result of that call. I liked to have all input values stored in const values with easily recognisable names by naming them with uppercase names. I think this makes it easier to read all of the inputs at a glance, and using the constants ensures I'm not accidently misspelling string values later on in the test.
+
+Most of the tests make use of the `Setup` class from the `CheckoutPaymentAPI.Tests.Core` project. I like to call methods like this to setup dependencies in tests instead of creating test-class-wide setup and teardown methods. It makes each test independent of each other, which reduces the chance of a test failing when it shouldn't, and allows newcomers to see everything involved in the test just by looking at it. 
+
+I made use of the Moq nuget package throughout the testing suite, as it allows you to mock certain dependencies to ensure they provide a certain result. I made good use of this when testing the payment process handler when I wanted the IAcquiringBank to return a particular result. I find mocking greatly improves test quality. It can be hard to do it if the system under test doesn't use Dependency Injection though, so it's extremely important that all parts of the API support that (which I think they do).
+
+I also used the Microsoft.AspNetCore.TestHost nuget package, which allows me to create a test server within the testing environment. This means I can test the API in a very similar way to how it will actually be used in production. The package enables me to send requests to the API with an HttpClient and get real responses back. This enables me to have integration tests, to ensure the API is hooked up correctly with validation, handlers, cache and database.
 
 ## Future Changes
 
