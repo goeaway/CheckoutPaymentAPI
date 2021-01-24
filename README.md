@@ -100,7 +100,7 @@ A real application may want to use authentication methods like OAuth/OpenId conn
 
 ### Application logging
 
-The application makes use of Serilog to log events to a rolling file. All application errors are logged but some important actions, such as saving a new payment, are logged too. Find the log in the application's executing directory, or with the command shown in the [docker README]() if you're running in docker.
+The application makes use of Serilog to log events to a rolling file. All application errors are logged but some important actions, such as saving a new payment, are logged too. Find the log in the application's executing directory, or with the command shown in the [deploy README](https://github.com/goeaway/CheckoutPaymentAPI/blob/master/Deploy/README.md) if you're running in docker.
 
 ### API Client
 
