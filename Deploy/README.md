@@ -1,6 +1,6 @@
 # Run the application in a docker container
 
-If you want to, you can run the API in a docker container. The steps below explain how to build the image for the API, run the container and then view the logs in the container. The below steps expect you have docker already installed. The steps were testing on a Windows 10 machine with Docker Desktop v3.1.0 and Docker Engine v20.10.2 with WSL2 as the underlying engine.
+If you want to, you can run the API in a docker container. The steps below explain how to build the image for the API, run the container and then view the logs in the container. The below steps expect you have docker already installed. The steps were tested on a Windows 10 machine with Docker Desktop v3.1.0 and Docker Engine v20.10.2 with WSL2 as the underlying engine.
 
 1. Clone the repo and then navigate to the repo's root folder in a shell with the docker daemon running.
 2. Run the below command to build the image:
