@@ -61,13 +61,36 @@ A successful request will return a response in the below format, where the `card
 }
 ```
 
+## About the API
+
+The application is built with ASPNET Core 3.1 and utilises the Mediatr nuget package to provide a CQRS style architecture. 
+
+I used EntityFrameworkCore to manage storage of data, although at this time the application only uses an InMemoryDatabase. EntityFrameworkCore makes swapping out different database providers quite easy, so it shouldn't be too difficult to use a SQL Server database or similar. The main reason to use InMemoryDatabase was to simplify the application.
+
+To validate requests, I used the FluentValidation nuget package, which goes nicely with Mediatr and can slotted into the Mediatr pipeline by using behaviours. This package makes managing validations on models really easy and can be easily tested in isolation. I added validation to ensure each part of the process payment request is present. I added further validation to ensure:
+* The card number is a valid card number (validation provided by FluentValidation)
+* The CVV is 3 digits long, from information I found online, all CVVs these days are 3 digits long
+* The expiry is not in the past. I chose to represent the expiry as a full date instead of just Month/Year, because I was unsure if the expiry is always represented like this. At present, the validation could fail for a valid date if the current date is newer than the expiry, even if they're in the same month. Going forward, it may be better to represent the expiry as Month/Year. I know for my card at least, it doesn't expire until the last day of the month.
+* The amount is not 0. Negative and positive values are allowed, but I assumed it shouldn't be possible to process a 0 amount request. It seemed like an unnecessary waste of resources to go through the whole process in this case.
+* The currency should be an ISO 4217 recognised currency code. For this application I simply added the most common codes to a list for validation, but a real application should have all recognised codes.
+
+New payments that come in are sent off to the Acquiring Bank via a class service in the process payment handler. The result of this is then stored, along with partially masked data of the request, in the application's DB. I chose to mask the card number and cvv here as I felt the DB shouldn't be holding sensitive information like this, like you would not store plain text passwords.
+
 ## Special Features
 
-#### Payment hash caching
+### Payment hash caching
 
-After discussion with Pawel, I understood it was important to try and mitigate the possibility of multiple similar requests being sent in quick succession. If a merchant tries to send the same request with the same request parameters, it could be a mistake. To mitigate this, I added an in memory cache to the application, which holds a hash string of the data provided in a process request with a short TTL. Upon new process requests coming in, their hash is checked against the those already in the cache, if they match, the API returns a 429 response and does not proceed with the payment. 
+After discussion with Pawel, I understood it was important to try and mitigate the possibility of multiple similar requests being sent in quick succession. If a merchant tries to send the same request with the same request parameters, it could be a mistake. To mitigate this, I added an in memory cache to the application, which holds a hash string of the data provided in a process request with a short TTL. Upon new process requests coming in, their hash is checked against the those already in the cache, if they match, the API returns a 429 response and does not proceed with the payment. When a payment is added to the DB, we add it to the cache for a short period to (at the moment it's only a minute, but the time can be changed via app config). I chose to cache both successful payments and failed, but I may be okay to not cache failed payments.
 
 I chose to use an `IMemoryCache`, which is built in to ASPNET Core. The main reason for using this implementation over another was the fact that I knew it would have handling of stale data already included, meaning the API can assign a short TTL to items and they would be removed when time is up automatically. I didn't want to try and role my own implementation and have to manage the removal of data myself, in the interest of time.
 
 I think using a cache would be a good solution in a production app, as it should be able to handle a lot of short lived data, the main downside of this implementation is that it is not distributed, if I wanted to have multiple instances of the API running, they couldn't share cached data between them. To take this further, I'd change to using a distributed cache, such as Redis. I didn't do so this time in the interest of time and to simplify the application.
+
+### Authentication via API key
+
+A real application may want to use authentication methods like OAuth/OpenId connect, but in the interest of time and complexity, I opted for a really simple API key approach. Where merchants are provided an API key ahead of time, and then they add this in each request made to the API, otherwise they receive a 401 status code. To implement this, I used the AspNetCore.Authentication.ApiKey nuget package, which provides a straightforward flow for you to authenticate users with. In this demo application, I simply hardcoded a couple of API keys in an IApiKeyRepository, but a better solution might be to load keys into the secret manager instead.
+
+### Application logging
+
+The application makes use of Serilog to log events to a rolling file. All application errors are logged but some important actions, such as saving a new payment, are logged too. Find the log in the application's executing directory, or with the command shown in the [docker README]() if you're running in docker.
 
