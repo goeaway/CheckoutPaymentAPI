@@ -94,3 +94,14 @@ A real application may want to use authentication methods like OAuth/OpenId conn
 
 The application makes use of Serilog to log events to a rolling file. All application errors are logged but some important actions, such as saving a new payment, are logged too. Find the log in the application's executing directory, or with the command shown in the [docker README]() if you're running in docker.
 
+### API Client
+
+I created a separate .net core library to house an API client for the API. This could be published as a nuget package and then used by merchants in their own .net solutions. The package includes an `APIClient` class, which implements the `IAPIClient` interface. This class provides two methods for merchants to use `GetPaymentDetails` and `ProcessPayment`. These methods use `HttpClient` under the hood and return typed versions of the possible responses from the API.
+
+## Testing
+
+The testing the API is split into three main projects 
+1. `CheckoutPaymentAPI.Tests.Unit` - which holds unit tests for the API project. This ensures validation and the handlers are doing what we want them to.
+2. `CheckoutPaymentAPI.Tests.Integration` - which holds integration test for the API project. This ensures the API is returning the correct response for different requests, such as 401 when not authenticated, or 429 when the same process payment request is sent multiple times.
+3. `CheckoutPaymentAPI.Tests.Client` - which holds unit tests for the API client project.
+
