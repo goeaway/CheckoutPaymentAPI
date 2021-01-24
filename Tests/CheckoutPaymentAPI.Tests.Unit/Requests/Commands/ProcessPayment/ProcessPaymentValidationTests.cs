@@ -57,7 +57,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
             var validator = new ProcessPaymentValidator(nowProvider);
             var failures = validator.ShouldHaveValidationErrorFor(r => r.Currency, request);
 
-            Assert.AreEqual(1, failures.Count());
+            Assert.AreNotEqual(0, failures.Count());
             Assert.AreEqual("Currency required", failures.First().ErrorMessage);
         }
 
@@ -147,6 +147,21 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
 
             Assert.AreEqual(1, failures.Count());
             Assert.AreEqual("CVV invalid", failures.First().ErrorMessage);
+        }
+
+        [TestMethod]
+        public void Fails_Currency_Not_Supported()
+        {
+            var request = new ProcessPaymentRequest
+            {
+                Currency = "definitely not in the list"
+            };
+            var nowProvider = new NowProvider();
+            var validator = new ProcessPaymentValidator(nowProvider);
+            var failures = validator.ShouldHaveValidationErrorFor(r => r.Currency, request);
+
+            Assert.AreEqual(1, failures.Count());
+            Assert.AreEqual("ISO 4217 Currency code not recognised", failures.First().ErrorMessage);
         }
 
         [TestMethod]

@@ -23,11 +23,30 @@ namespace CheckoutPaymentAPI.Requests.Commands.ProcessPayment
                 .NotEmpty().WithMessage("Amount required");
 
             RuleFor(x => x.Currency)
-                .NotEmpty().WithMessage("Currency required");
+                .NotEmpty().WithMessage("Currency required")
+                .Must(x => SupportedCurrencies().Contains(x)).WithMessage("ISO 4217 Currency code not recognised");
 
             RuleFor(x => x.CVV)
                 .NotEmpty().WithMessage("CVV required")
                 .Length(3).WithMessage("CVV invalid");
+        }
+
+        private IReadOnlyCollection<string> SupportedCurrencies()
+        {
+            return new List<string>
+            {
+                "GBP",
+                "EUR",
+                "USD",
+                "AUD",
+                "CAD",
+                "JPY",
+                "CNY",
+                "HKD",
+                "INR",
+                "RUB",
+                "SAR"
+            };
         }
     }
 }
