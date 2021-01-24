@@ -98,10 +98,19 @@ The application makes use of Serilog to log events to a rolling file. All applic
 
 I created a separate .net core library to house an API client for the API. This could be published as a nuget package and then used by merchants in their own .net solutions. The package includes an `APIClient` class, which implements the `IAPIClient` interface. This class provides two methods for merchants to use `GetPaymentDetails` and `ProcessPayment`. These methods use `HttpClient` under the hood and return typed versions of the possible responses from the API.
 
+### Docker support
+
+The application can be built into a docker image and then easily installed on different systems. I am able to run an instance of the API in a docker container on my windows PC using Docker for Windows. Using docker enables the app to be installed anywhere docker is supported. It also allows us to scale the application better, we could spin up multiple instances of the API and then share user traffic between them by using a load balancer.
+
+In its current state, a couple of changes should be made first however. 
+* We should update the app to not use an EntityFrameworkCore InMemoryDatabase and instead use a real DB provider, such as SQL Server. This could be housed in a separate docker container, and scaled separately.
+* We should also update the app to use a separate cache, instead of the in memory cache we're currently using. We could house a Redis cache in another docker container, and again scale that separately.
+
 ## Testing
 
 The testing the API is split into three main projects 
-1. `CheckoutPaymentAPI.Tests.Unit` - which holds unit tests for the API project. This ensures validation and the handlers are doing what we want them to.
-2. `CheckoutPaymentAPI.Tests.Integration` - which holds integration test for the API project. This ensures the API is returning the correct response for different requests, such as 401 when not authenticated, or 429 when the same process payment request is sent multiple times.
+1. `CheckoutPaymentAPI.Tests.API.Unit` - which holds unit tests for the API project. This ensures validation and the handlers are doing what we want them to.
+2. `CheckoutPaymentAPI.Tests.API.Integration` - which holds integration tests for the API project. This ensures the API is returning the correct response for different requests, such as 401 when not authenticated, or 429 when the same process payment request is sent multiple times.
 3. `CheckoutPaymentAPI.Tests.Client` - which holds unit tests for the API client project.
 
+The solution also contains `CheckoutPaymentAPI.Tests.Core`, which contains a `Setup` class used by the test projects to create the context and test server
