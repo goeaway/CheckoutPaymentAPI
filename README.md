@@ -4,6 +4,18 @@ and retrieve historical data from previous transactions.
 
 The project consists of an ASPNET Core web api, running on .net core 3.1, and a .net core library merchants could use to access the API from a .net application.
 
+## Feedback changes
+
+Some feedback points and what I did below:
+* Card number validation should not be delegated - For this I implemented my own Luhn algorithm in the validator to ensure card numbers are correct
+* CVV should only allow digits - This was an oversight before and has been rectified by adding more validation rules for the CVV
+* Amount should be positive - I had originally assumed that a negative amount would be okay, but I've changed the API to only allow positive values
+* Expiry should be month/year only - I originally used a DateTime object but after feedback I've changed this to be an object with month and year integer properties
+* Validation errors should not be implemented as exceptions - This change was a bit harder to make as the API didn't really make it easy to allow for two different types of return object. I found [this article](https://medium.com/the-cloud-builders-guild/manual-validation-in-the-business-layer-without-exceptions-846712497cc2) online about how to implement a flow to choose between the normal response and an error response. This worked well and so I've removed the exceptions and handling from the Startup.cs and am using this instead.
+* Swagger UI try it out - I re-enabled the try it out feature and updated the Swagger config to add the `X-API-KEY` header to try it out requests
+* Payment result should be a string message - I updated the acquiring bank service to return a status value, I then updated the processed payment entity to store a string version of this status instead.
+* Endpoints could be more restful - I removed the `PaymentDetailsController` and updated the endpoints.
+
 ## How to use
 
 Clone the repo, then pick one of the below options
