@@ -9,12 +9,14 @@ using System.Text;
 using Moq;
 using CheckoutPaymentAPI.Application.AcquiringBank;
 using CheckoutPaymentAPI.Models.AcquiringBank;
+using CheckoutPaymentAPI.Models;
+using System.Linq;
 
 namespace CheckoutPaymentAPI.IntegrationTests.Controllers
 {
     [TestClass]
     [TestCategory("API - Integration - PaymentsController")]
-    public class PaymentsControllerTests
+    public class ProcessPaymentTests
     {
         [TestMethod]
         public async Task Returns_200_With_Success_Data_For_Successful_Payment()
@@ -27,7 +29,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
             const string CURRENCY = "GBP";
 
             var testNow = new DateTime(2021, 01, 01);
-            var EXPIRY = testNow.AddYears(1);
+            var EXPIRY = new MonthYear { Year = testNow.AddYears(1).Year, Month = testNow.Month };
 
             var acqBankMock = new Mock<IAcquiringBank>();
 
@@ -42,7 +44,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
                 acqBankMock.Setup(mock => mock.SendPayment(It.IsAny<AcquiringBankRequest>()))
                     .ReturnsAsync(new AcquiringBankResponse
                     {
-                        Success = true,
+                        Status = AcquiringBankResponseStatus.Success,
                         PaymentId = RETURNED_PAYMENT_ID
                     });
                 
@@ -58,7 +60,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
                 var requestContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
                 client.DefaultRequestHeaders.Add("X-API-KEY", "CheckoutPaymentAPI-Q2hlY2tvdXRQYXltZW50QVBJ");
-                var response = await client.PostAsync($"/payments/process", requestContent);
+                var response = await client.PostAsync("/payments", requestContent);
                 response.EnsureSuccessStatusCode();
 
                 var responseContent = await response.Content.ReadAsStringAsync();
@@ -80,7 +82,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
             const string CURRENCY = "GBP";
 
             var testNow = new DateTime(2021, 01, 01);
-            var EXPIRY = testNow.AddYears(1);
+            var EXPIRY = new MonthYear { Year = testNow.AddYears(1).Year, Month = testNow.Month };
 
             var acqBankMock = new Mock<IAcquiringBank>();
 
@@ -95,7 +97,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
                 acqBankMock.Setup(mock => mock.SendPayment(It.IsAny<AcquiringBankRequest>()))
                     .ReturnsAsync(new AcquiringBankResponse
                     {
-                        Success = false,
+                        Status = AcquiringBankResponseStatus.Payment_Declined,
                         PaymentId = RETURNED_PAYMENT_ID
                     });
 
@@ -111,7 +113,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
                 var requestContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
                 client.DefaultRequestHeaders.Add("X-API-KEY", "CheckoutPaymentAPI-Q2hlY2tvdXRQYXltZW50QVBJ");
-                var response = await client.PostAsync($"/payments/process", requestContent);
+                var response = await client.PostAsync("/payments", requestContent);
                 response.EnsureSuccessStatusCode();
 
                 var responseContent = await response.Content.ReadAsStringAsync();
@@ -131,8 +133,8 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
             const string CURRENCY = "GBP";
 
             var testNow = new DateTime(2021, 01, 01);
-            var EXPIRY = testNow.AddYears(1);
-            
+            var EXPIRY = new MonthYear { Year = testNow.AddYears(1).Year, Month = testNow.Month };
+
             var (_, client, context) = Setup.CreateServer(new Setup.CreateServerOptions
             {
                 TestNow = testNow
@@ -152,14 +154,14 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
                 var requestContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
                 client.DefaultRequestHeaders.Add("X-API-KEY", "CheckoutPaymentAPI-Q2hlY2tvdXRQYXltZW50QVBJ");
-                var response = await client.PostAsync($"/payments/process", requestContent);
+                var response = await client.PostAsync("/payments", requestContent);
                 Assert.AreEqual(400, (int)response.StatusCode);
 
                 var responseContent = await response.Content.ReadAsStringAsync();
                 var data = JsonConvert.DeserializeObject<ErrorResponseDTO>(responseContent);
 
                 Assert.AreEqual("Validation error", data.Message);
-                Assert.AreEqual(1, data.Errors.Count);
+                Assert.AreEqual(1, data.Errors.Count());
             }
         }
 
@@ -176,7 +178,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
             const string CURRENCY = "GBP";
 
             var testNow = new DateTime(2022, 01, 01);
-            var EXPIRY = testNow.AddYears(1);
+            var EXPIRY = new MonthYear { Year = testNow.AddYears(1).Year, Month = testNow.Month };
 
             var acqBankMock = new Mock<IAcquiringBank>();
 
@@ -190,12 +192,12 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
                 acqBankMock.SetupSequence(mock => mock.SendPayment(It.IsAny<AcquiringBankRequest>()))
                     .ReturnsAsync(new AcquiringBankResponse
                     {
-                        Success = true,
+                        Status = AcquiringBankResponseStatus.Success,
                         PaymentId = FIRST_RETURNED_PAYMENT_ID
                     })
                     .ReturnsAsync(new AcquiringBankResponse
                     {
-                        Success = true,
+                        Status = AcquiringBankResponseStatus.Success,
                         PaymentId = SECOND_RETURNED_PAYMENT_ID
                     });
 
@@ -211,10 +213,10 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
                 client.DefaultRequestHeaders.Add("X-API-KEY", "CheckoutPaymentAPI-Q2hlY2tvdXRQYXltZW50QVBJ");
                 var requestContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
-                var response1 = await client.PostAsync("/payments/process", requestContent);
+                var response1 = await client.PostAsync("/payments", requestContent);
                 response1.EnsureSuccessStatusCode();
 
-                var response2 = await client.PostAsync("/payments/process", requestContent);
+                var response2 = await client.PostAsync("/payments", requestContent);
                 Assert.AreEqual(429, (int)response2.StatusCode);
             }
         }
@@ -228,7 +230,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
             const string CURRENCY = "GBP";
 
             var testNow = new DateTime(2022, 01, 01);
-            var EXPIRY = testNow.AddYears(1);
+            var EXPIRY = new MonthYear { Year = testNow.AddYears(1).Year, Month = testNow.Month };
 
             var (_, client, context) = Setup.CreateServer(new Setup.CreateServerOptions
             {
@@ -249,7 +251,7 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
 
                 var requestContent = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
-                var response = await client.PostAsync("/payments/process", requestContent);
+                var response = await client.PostAsync("/payments", requestContent);
                 Assert.AreEqual(401, (int)response.StatusCode);
             }
         }
