@@ -121,7 +121,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
         }
 
         [TestMethod]
-        public void Fails_Expiry_Year_Empty()
+        public void Fails_No_Expiry_Year()
         {
             var testNow = new DateTime(2021, 01, 01);
             var expiryDate = testNow.AddSeconds(-1);
@@ -139,7 +139,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
         }
 
         [TestMethod]
-        public void Fails_Expiry_Month_Empty()
+        public void Fails_No_Expiry_Month()
         {
             var testNow = new DateTime(2021, 01, 01);
             var expiryDate = testNow.AddSeconds(-1);
