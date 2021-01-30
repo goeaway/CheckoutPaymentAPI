@@ -14,13 +14,13 @@ namespace CheckoutPaymentAPI.IntegrationTests.Controllers
     public class GetPaymentDetailsTests
     {
         [TestMethod]
-        public async Task Return_404_For_No_Id()
+        public async Task Return_405_For_No_Id()
         {
             var (_, client, _) = Setup.CreateServer();
 
-            var response = await client.GetAsync("/paymentdetails");
+            var response = await client.GetAsync("/payments");
 
-            Assert.AreEqual(404, (int)response.StatusCode);
+            Assert.AreEqual(405, (int)response.StatusCode);
         }
 
         [TestMethod]
