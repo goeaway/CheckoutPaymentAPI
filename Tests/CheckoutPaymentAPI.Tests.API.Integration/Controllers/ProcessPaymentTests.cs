@@ -15,7 +15,7 @@ using System.Linq;
 namespace CheckoutPaymentAPI.IntegrationTests.Controllers
 {
     [TestClass]
-    [TestCategory("API - Integration - PaymentsController")]
+    [TestCategory("API - Integration - Process Payments")]
     public class ProcessPaymentTests
     {
         [TestMethod]

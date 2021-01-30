@@ -10,7 +10,7 @@ using System.Linq;
 namespace CheckoutPaymentAPI.IntegrationTests.Controllers
 {
     [TestClass]
-    [TestCategory("API - Integration - PaymentDetailsController")]
+    [TestCategory("API - Integration - Get Payment Details")]
     public class GetPaymentDetailsTests
     {
         [TestMethod]
