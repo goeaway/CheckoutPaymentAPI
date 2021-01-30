@@ -13,7 +13,7 @@ namespace CheckoutPaymentAPI.Client.Responses
         /// <summary>
         /// Gets or sets the expiry date of the card used in the payment
         /// </summary>
-        public DateTime Expiry { get; set; }
+        public MonthYear Expiry { get; set; }
         /// <summary>
         /// Gets or sets the decimal amount of this payment
         /// </summary>
@@ -29,6 +29,6 @@ namespace CheckoutPaymentAPI.Client.Responses
         /// <summary>
         /// Gets or sets a boolean value indicating if the payment was a success
         /// </summary>
-        public bool PaymentResult { get; set; }
+        public string PaymentResult { get; set; }
     }
 }

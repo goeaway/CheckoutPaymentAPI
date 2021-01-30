@@ -23,7 +23,7 @@ namespace CheckoutPaymentAPI.Client
         Task<ApiResponse<ProcessPaymentResponse>> ProcessPayment(
             string cardNumber, 
             string cvv,
-            DateTime expiry,
+            MonthYear expiry,
             decimal amount,
             string currency
         );

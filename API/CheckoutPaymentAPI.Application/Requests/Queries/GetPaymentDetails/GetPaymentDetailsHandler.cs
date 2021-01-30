@@ -1,4 +1,4 @@
-﻿using CheckoutPaymentAPI.Application.Exceptions;
+﻿using CheckoutPaymentAPI.Models;
 using CheckoutPaymentAPI.Models.DTOs;
 using CheckoutPaymentAPI.Persistence;
 using MediatR;
@@ -15,7 +15,7 @@ namespace CheckoutPaymentAPI.Application.Requests.Queries.GetPaymentDetails
     /// <summary>
     /// Handles the retrieval of a previously processed payment
     /// </summary>
-    public class GetPaymentDetailsHandler : IRequestHandler<GetPaymentDetailsRequest, GetPaymentDetailsResponseDTO>
+    public class GetPaymentDetailsHandler : IRequestHandler<GetPaymentDetailsRequest, Either<GetPaymentDetailsResponseDTO, ErrorResponseDTO>>
     {
         private readonly ILogger _logger;
         private readonly CheckoutPaymentAPIContext _context;
@@ -25,7 +25,7 @@ namespace CheckoutPaymentAPI.Application.Requests.Queries.GetPaymentDetails
             _logger = logger;
             _context = context;
         }
-        public async Task<GetPaymentDetailsResponseDTO> Handle(GetPaymentDetailsRequest request, CancellationToken cancellationToken)
+        public async Task<Either<GetPaymentDetailsResponseDTO, ErrorResponseDTO>> Handle(GetPaymentDetailsRequest request, CancellationToken cancellationToken)
         {
             // try and find payment in context
             var foundPayment = await _context.ProcessedPayments.FindAsync(request.PaymentId);
@@ -33,7 +33,11 @@ namespace CheckoutPaymentAPI.Application.Requests.Queries.GetPaymentDetails
             // throw error with message if not found or if not the right owner, will be picked up by error handler in startup
             if(foundPayment == null || foundPayment.Owner != request.Owner)
             {
-                throw new RequestFailedException($"Payment details not found", HttpStatusCode.NotFound);
+                return new ErrorResponseDTO
+                {
+                    Message = "Payment details not found",
+                    StatusCode = HttpStatusCode.NotFound
+                };
             }
 
             _logger.Information("Retrieving found payment with id {Id}", foundPayment.Id);
@@ -41,7 +45,7 @@ namespace CheckoutPaymentAPI.Application.Requests.Queries.GetPaymentDetails
             return new GetPaymentDetailsResponseDTO 
             { 
                 CardNumber = foundPayment.CardNumber,
-                Expiry = foundPayment.Expiry,
+                Expiry = new MonthYear { Year = foundPayment.Expiry.Year, Month = foundPayment.Expiry.Month },
                 Currency = foundPayment.Currency,
                 Amount = foundPayment.Amount,
                 CVV = foundPayment.CVV,

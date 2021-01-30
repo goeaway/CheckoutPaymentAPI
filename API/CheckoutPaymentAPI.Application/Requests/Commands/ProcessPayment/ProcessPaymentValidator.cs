@@ -15,17 +15,39 @@ namespace CheckoutPaymentAPI.Application.Requests.Commands.ProcessPayment
         {
             // must have card number and it must be a valid one
             RuleFor(x => x.CardNumber)
-                .NotEmpty().WithMessage("Card number required")
-                .CreditCard().WithMessage("Card number invalid");
+                .NotEmpty().WithMessage("Card number required");
+
+            When(x => !string.IsNullOrWhiteSpace(x.CardNumber), () =>
+            {
+                RuleFor(x => x.CardNumber)
+                    .Must(x => ValidCreditCard(x))
+                    .WithMessage("Card number invalid");
+            });
 
             // must have expiry and it must be in the future
             RuleFor(x => x.Expiry)
-                .NotEmpty().WithMessage("Expiry required")
-                .GreaterThan(nowProvider.Now).WithMessage("Expiry invalid");
+                .NotEmpty().WithMessage("Expiry required");
+
+            When(x => x.Expiry != null, () =>
+            {
+                RuleFor(x => x.Expiry.Year)
+                    .NotEmpty()
+                    .WithMessage("Expiry year required");
+
+                RuleFor(x => x.Expiry.Month)
+                    .InclusiveBetween(1, 12)
+                    .WithMessage("Expiry month must be between 1 and 12");
+
+                RuleFor(x => x.Expiry)
+                    .Must(x => new DateTime(x.Year, x.Month, 1).AddMonths(1).AddDays(-1) > nowProvider.Now)
+                    .When(x => x.Expiry.Year > 0 && x.Expiry.Month > 0 && x.Expiry.Month < 13)
+                    .WithMessage("Expiry invalid");
+            });
 
             // must have amount and it must not be 0
             RuleFor(x => x.Amount)
-                .NotEmpty().WithMessage("Amount required");
+                .GreaterThan(0)
+                .WithMessage("Amount must be greater than 0");
 
             // must have a currency and it must be in the approved list
             RuleFor(x => x.Currency)
@@ -34,8 +56,21 @@ namespace CheckoutPaymentAPI.Application.Requests.Commands.ProcessPayment
 
             // must have cvv and it must be 3 digits long
             RuleFor(x => x.CVV)
-                .NotEmpty().WithMessage("CVV required")
-                .Length(3).WithMessage("CVV invalid");
+                .NotEmpty().WithMessage("CVV required");
+
+            When(x => !string.IsNullOrWhiteSpace(x.CVV), () =>
+            {
+                RuleFor(x => x.CVV)
+                    .Length(3)
+                    .WithMessage("CVV must be 3 characters long");
+
+                When(x => x.CVV.Length == 3, () =>
+                {
+                    RuleFor(x => x.CVV)
+                        .Must(x => int.TryParse(x, out _))
+                        .WithMessage("CVV must not contain letters or symbols");
+                });
+            });
 
             RuleFor(x => x.Owner)
                 .NotEmpty().WithMessage("Owner required");
@@ -61,6 +96,38 @@ namespace CheckoutPaymentAPI.Application.Requests.Commands.ProcessPayment
                 "RUB",
                 "SAR"
             };
+        }
+
+        private bool ValidCreditCard(string value)
+        {
+            if(string.IsNullOrWhiteSpace(value))
+            {
+                return false;
+            }
+
+            value = value.Replace("-", "").Replace(" ", "");
+
+            var checksum = 0;
+            var evenDigit = false;
+
+            foreach (char digit in value.ToCharArray().Reverse())
+            {
+                if (!char.IsDigit(digit))
+                {
+                    return false;
+                }
+
+                var digitValue = (digit - '0') * (evenDigit ? 2 : 1);
+                evenDigit = !evenDigit;
+
+                while (digitValue > 0)
+                {
+                    checksum += digitValue % 10;
+                    digitValue /= 10;
+                }
+            }
+
+            return (checksum % 10) == 0;
         }
     }
 }

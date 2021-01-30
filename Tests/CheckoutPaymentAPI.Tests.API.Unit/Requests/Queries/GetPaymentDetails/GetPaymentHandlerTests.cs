@@ -1,10 +1,10 @@
-﻿using CheckoutPaymentAPI.Application.Exceptions;
-using CheckoutPaymentAPI.Application.Requests.Queries.GetPaymentDetails;
+﻿using CheckoutPaymentAPI.Application.Requests.Queries.GetPaymentDetails;
 using CheckoutPaymentAPI.Models.Entities;
 using CheckoutPaymentAPI.Tests.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Serilog;
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,7 +17,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Queries.GetPaymentDetails
         private readonly ILogger _logger = new LoggerConfiguration().CreateLogger();
 
         [TestMethod]
-        public async Task Throws_If_No_Data_Found_For_Id()
+        public async Task Returns_Error_Response_If_No_Data_Found_For_Id()
         {
             var request = new GetPaymentDetailsRequest
             {
@@ -26,20 +26,21 @@ namespace CheckoutPaymentAPI.Tests.Requests.Queries.GetPaymentDetails
 
             using var context = Setup.CreateContext();
             var handler = new GetPaymentDetailsHandler(_logger, context);
-            await Assert
-                .ThrowsExceptionAsync<RequestFailedException>(
-                    () => handler.Handle(request, CancellationToken.None));
+
+
+            var result = (await handler.Handle(request, CancellationToken.None)).ErrorOrDefault;
+            Assert.AreEqual(HttpStatusCode.NotFound, result.StatusCode);
         }
 
         [TestMethod]
-        public async Task Throws_If_No_Data_Found_For_Owner()
+        public async Task Returns_Error_Response_If_No_Data_Found_For_Owner()
         {
             const int PAYMENT_ID = 1;
             const string CARD_NUMBER = "1234";
             const string CVV = "123";
             const string CURRENCY = "GBP";
             const decimal AMOUNT = .1m;
-            const bool PAYMENT_RESULT = true;
+            const string PAYMENT_RESULT = "Success";
             const string OWNER = "owner";
             var EXPIRY = new DateTime(2021, 01, 01);
 
@@ -66,11 +67,10 @@ namespace CheckoutPaymentAPI.Tests.Requests.Queries.GetPaymentDetails
             context.SaveChanges();
 
             var handler = new GetPaymentDetailsHandler(_logger, context);
-            await Assert
-                .ThrowsExceptionAsync<RequestFailedException>(
-                    () => handler.Handle(request, CancellationToken.None));
-        }
 
+            var result = (await handler.Handle(request, CancellationToken.None)).ErrorOrDefault;
+            Assert.AreEqual(HttpStatusCode.NotFound, result.StatusCode);
+        }
 
         [TestMethod]
         public async Task Returns_Details_In_DTO()
@@ -80,7 +80,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Queries.GetPaymentDetails
             const string CVV = "123";
             const string CURRENCY = "GBP";
             const decimal AMOUNT = .1m;
-            const bool PAYMENT_RESULT = true;
+            const string PAYMENT_RESULT = "Success";
             const string OWNER = "owner";
             var EXPIRY = new DateTime(2021, 01, 01);
 
@@ -107,14 +107,16 @@ namespace CheckoutPaymentAPI.Tests.Requests.Queries.GetPaymentDetails
             context.SaveChanges();
 
             var handler = new GetPaymentDetailsHandler(_logger, context);
-            var result = await handler.Handle(request, CancellationToken.None);
+            var result = (await handler.Handle(request, CancellationToken.None)).SuccessOrDefault;
 
             Assert.AreEqual(PAYMENT_RESULT, result.PaymentResult);
             Assert.AreEqual(CARD_NUMBER, result.CardNumber);
             Assert.AreEqual(CVV, result.CVV);
-            Assert.AreEqual(EXPIRY, result.Expiry);
             Assert.AreEqual(CURRENCY, result.Currency);
             Assert.AreEqual(AMOUNT, result.Amount);
+
+            Assert.AreEqual(EXPIRY.Year, result.Expiry.Year);
+            Assert.AreEqual(EXPIRY.Month, result.Expiry.Month);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace CheckoutPaymentAPI.Models.AcquiringBank
         /// <summary>
         /// Gets or sets a value indicating if the request was a success
         /// </summary>
-        public bool Success { get; set; }
+        public AcquiringBankResponseStatus Status { get; set; }
         /// <summary>
         /// Gets or sets a value identifying the payment
         /// </summary>

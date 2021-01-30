@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace CheckoutPaymentAPI.Models.DTOs
@@ -11,13 +13,19 @@ namespace CheckoutPaymentAPI.Models.DTOs
     public class ErrorResponseDTO
     {
         /// <summary>
+        /// Gets or sets an Http status code for this error response
+        /// </summary>
+        [JsonIgnore]
+        public HttpStatusCode StatusCode { get; set; }
+            = HttpStatusCode.BadRequest;
+        /// <summary>
         /// Gets or sets the message for the error
         /// </summary>
         public string Message { get; set; }
         /// <summary>
         /// Gets or sets a collection of extra error information
         /// </summary>
-        public List<string> Errors { get; set; }
+        public IEnumerable<string> Errors { get; set; }
             = new List<string>();
     }
 }

@@ -1,4 +1,5 @@
-﻿using CheckoutPaymentAPI.Models.DTOs;
+﻿using CheckoutPaymentAPI.Models;
+using CheckoutPaymentAPI.Models.DTOs;
 using MediatR;
 
 namespace CheckoutPaymentAPI.Application.Requests.Queries.GetPaymentDetails
@@ -6,7 +7,7 @@ namespace CheckoutPaymentAPI.Application.Requests.Queries.GetPaymentDetails
     /// <summary>
     /// Represents a request for a previously made payment
     /// </summary>
-    public class GetPaymentDetailsRequest : IRequest<GetPaymentDetailsResponseDTO>
+    public class GetPaymentDetailsRequest : IRequest<Either<GetPaymentDetailsResponseDTO, ErrorResponseDTO>>
     {
         /// <summary>
         /// Gets or sets the payment id of the processed payment.

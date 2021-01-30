@@ -34,9 +34,9 @@ namespace CheckoutPaymentAPI.Models.Entities
         /// </summary>
         public decimal Amount { get; set; }
         /// <summary>
-        /// Gets or sets a value indicating if the payment was successful or not
+        /// Gets or sets a value indicating the result of the payment
         /// </summary>
-        public bool PaymentResult { get; set; }
+        public string PaymentResult { get; set; }
         /// <summary>
         /// Gets or sets when the payment was saved
         /// </summary>

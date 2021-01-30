@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 using AspNetCore.Authentication.ApiKey;
 using CheckoutPaymentAPI.Application.AcquiringBank;
 using CheckoutPaymentAPI.Application.Behaviours;
-using CheckoutPaymentAPI.Application.Exceptions;
 using CheckoutPaymentAPI.Application.Requests.Commands.ProcessPayment;
 using CheckoutPaymentAPI.Authentication;
 using CheckoutPaymentAPI.Core.Providers;
 using CheckoutPaymentAPI.Models.DTOs;
 using CheckoutPaymentAPI.Persistence;
+using CheckoutPaymentAPI.Swagger;
 using FluentValidation.AspNetCore;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -98,9 +98,11 @@ namespace CheckoutPaymentAPI
                 c.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Version = "v1",
-                    Title = "CheckoutPaymentAPI",
+                    Title = "Checkout Payment API",
                     Description = "A checkout payment gateaway",
                 });
+
+                c.OperationFilter<AddRequiredHeaderParameter>();
 
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
@@ -122,8 +124,7 @@ namespace CheckoutPaymentAPI
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "CheckoutPaymentAPI");
-                c.SupportedSubmitMethods(new SubmitMethod[] { });
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Checkout Payment API");
             });
 
             app.UseRouting();
@@ -149,24 +150,10 @@ namespace CheckoutPaymentAPI
                 var logger = app.ApplicationServices.GetService<ILogger>();
                 logger.Error(exception, "Error occurred when processing request {uri}", uri);
 
-                var errorResponse = new ErrorResponseDTO();
-
-                if (exception is RequestValidationFailedException)
+                var errorResponse = new ErrorResponseDTO 
                 {
-                    ctx.Response.StatusCode = 400;
-                    errorResponse.Message = "Validation error";
-                    errorResponse.Errors.AddRange((exception as RequestValidationFailedException).Failures.Select(f => f.ErrorMessage));
-                }
-                else if (exception is RequestFailedException)
-                {
-                    var requestFailedException = exception as RequestFailedException;
-                    ctx.Response.StatusCode = (int)requestFailedException.Code;
-                    errorResponse.Message = requestFailedException.Message;
-                } 
-                else
-                {
-                    errorResponse.Message = exception.Message;
-                }
+                    Message = exception.Message
+                };
 
                 await ctx.Response.WriteAsync(JsonConvert.SerializeObject(errorResponse));
             });

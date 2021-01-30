@@ -22,7 +22,8 @@ namespace CheckoutPaymentAPI.Tests.Client
             const string CVV = "123";
             const string CURRENCY = "GBP";
             var testNow = new DateTime(2021, 01, 01);
-            var EXPIRY = testNow.AddYears(1);
+            var expiryDate = testNow.AddYears(1);
+            var EXPIRY = new MonthYear(expiryDate.Month, expiryDate.Year);
 
             var (_, client, context) = Setup.CreateServer(new Setup.CreateServerOptions
             {
@@ -59,7 +60,8 @@ namespace CheckoutPaymentAPI.Tests.Client
             const string CVV = "123";
             const string CURRENCY = "GBP";
             var testNow = new DateTime(2021, 01, 01);
-            var EXPIRY = testNow.AddYears(1);
+            var expiryDate = testNow.AddYears(1);
+            var EXPIRY = new MonthYear(expiryDate.Month, expiryDate.Year);
 
             var (_, client, _) = Setup.CreateServer(new Setup.CreateServerOptions
             {
@@ -88,7 +90,8 @@ namespace CheckoutPaymentAPI.Tests.Client
             const string CVV = "123";
             const string CURRENCY = "GBP";
             var testNow = new DateTime(2021, 01, 01);
-            var EXPIRY = testNow.AddYears(1);
+            var expiryDate = testNow.AddYears(1);
+            var EXPIRY = new MonthYear(expiryDate.Month, expiryDate.Year);
 
             var (_, client, _) = Setup.CreateServer(new Setup.CreateServerOptions
             {
@@ -113,7 +116,8 @@ namespace CheckoutPaymentAPI.Tests.Client
             const decimal AMOUNT = .1m;
             const string CVV = "123";
             var testNow = new DateTime(2021, 01, 01);
-            var EXPIRY = testNow.AddYears(1);
+            var expiryDate = testNow.AddYears(1);
+            var EXPIRY = new MonthYear(expiryDate.Month, expiryDate.Year);
 
             var (_, client, _) = Setup.CreateServer(new Setup.CreateServerOptions
             {
@@ -138,7 +142,8 @@ namespace CheckoutPaymentAPI.Tests.Client
             const decimal AMOUNT = .1m;
             const string CURRENCY = "GBP";
             var testNow = new DateTime(2021, 01, 01);
-            var EXPIRY = testNow.AddYears(1);
+            var expiryDate = testNow.AddYears(1);
+            var EXPIRY = new MonthYear(expiryDate.Month, expiryDate.Year);
 
             var (_, client, _) = Setup.CreateServer(new Setup.CreateServerOptions
             {
@@ -166,7 +171,7 @@ namespace CheckoutPaymentAPI.Tests.Client
             const string CURRENCY = "GBP";
             var testNow = new DateTime(2021, 01, 01);
             var EXPIRY = testNow.AddYears(1);
-            const bool PAYMENT_RESULT = true;
+            const string PAYMENT_RESULT = "Success";
 
             var (_, client, context) = Setup.CreateServer(new Setup.CreateServerOptions
             {
@@ -201,8 +206,9 @@ namespace CheckoutPaymentAPI.Tests.Client
                 Assert.AreEqual(CARD_NUMBER, response.Data.CardNumber);
                 Assert.AreEqual(CVV, response.Data.CVV);
                 Assert.AreEqual(CURRENCY, response.Data.Currency);
-                Assert.AreEqual(EXPIRY, response.Data.Expiry);
                 Assert.AreEqual(AMOUNT, response.Data.Amount);
+                Assert.AreEqual(EXPIRY.Year, response.Data.Expiry.Year);
+                Assert.AreEqual(EXPIRY.Month, response.Data.Expiry.Month);
             }
         }
 

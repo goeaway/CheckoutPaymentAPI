@@ -10,18 +10,18 @@ using System.Threading.Tasks;
 using Serilog;
 using System.Security.Cryptography;
 using CheckoutPaymentAPI.Models.AcquiringBank;
-using CheckoutPaymentAPI.Application.Exceptions;
 using CheckoutPaymentAPI.Application.AcquiringBank;
 using CheckoutPaymentAPI.Core.Providers;
 using CheckoutPaymentAPI.Application.Options;
 using CheckoutPaymentAPI.Models.Entities;
+using CheckoutPaymentAPI.Models;
 
 namespace CheckoutPaymentAPI.Application.Requests.Commands.ProcessPayment
 {
     /// <summary>
     /// Handles processing of a new payment sent to the API
     /// </summary>
-    public class ProcessPaymentHandler : IRequestHandler<ProcessPaymentRequest, ProcessPaymentResponseDTO>
+    public class ProcessPaymentHandler : IRequestHandler<ProcessPaymentRequest, Either<ProcessPaymentResponseDTO, ErrorResponseDTO>>
     {
         private readonly IAcquiringBank _acquiringBank;
         private readonly INowProvider _nowProvider;
@@ -46,7 +46,7 @@ namespace CheckoutPaymentAPI.Application.Requests.Commands.ProcessPayment
             _context = context;
         }
 
-        public async Task<ProcessPaymentResponseDTO> Handle(ProcessPaymentRequest request, CancellationToken cancellationToken)
+        public async Task<Either<ProcessPaymentResponseDTO, ErrorResponseDTO>> Handle(ProcessPaymentRequest request, CancellationToken cancellationToken)
         {
             // build a hashed key based on the values of the request
             var requestCacheKey = BuildCacheKey(request);
@@ -54,7 +54,11 @@ namespace CheckoutPaymentAPI.Application.Requests.Commands.ProcessPayment
             // check if the cache already has this key, if so throw exception
             if(_cache.TryGetValue(requestCacheKey, out _))
             {
-                throw new RequestFailedException("Multiple same request detected", HttpStatusCode.TooManyRequests);
+                return new ErrorResponseDTO
+                {
+                    Message = "Multiple same requests detected",
+                    StatusCode = HttpStatusCode.TooManyRequests
+                };
             }
 
             _logger.Information("Verifying payment with acquiring bank");
@@ -72,12 +76,12 @@ namespace CheckoutPaymentAPI.Application.Requests.Commands.ProcessPayment
             var newPayment = new ProcessedPayment
             {
                 Id = bankResponse.PaymentId,
-                PaymentResult = bankResponse.Success,
+                PaymentResult = bankResponse.Status.ToString().Replace("_", " "),
                 // mask all but last 4 digits with *
                 CardNumber = new string('*', request.CardNumber.Length - 4) + request.CardNumber.Substring(request.CardNumber.Length - 4),
                 // mask full length with asterisks
                 CVV = new string('*', request.CVV.Length), 
-                Expiry = request.Expiry,
+                Expiry = new DateTime(request.Expiry.Year, request.Expiry.Month + 1, 1).AddDays(-1),
                 Amount = request.Amount,
                 Created = _nowProvider.Now,
                 Currency = request.Currency,
@@ -99,7 +103,7 @@ namespace CheckoutPaymentAPI.Application.Requests.Commands.ProcessPayment
             return new ProcessPaymentResponseDTO
             {
                 PaymentId = newPayment.Id,
-                Success = newPayment.PaymentResult
+                Success = bankResponse.Status == AcquiringBankResponseStatus.Success
             };
         }
 
@@ -119,7 +123,7 @@ namespace CheckoutPaymentAPI.Application.Requests.Commands.ProcessPayment
             builder.Append(request.Amount + "");
             builder.Append(request.Currency);
             builder.Append(request.CVV);
-            builder.Append(request.Expiry.ToShortDateString());
+            builder.Append(request.Expiry.Month + request.Expiry.Year + "");
             builder.Append(request.Owner);
 
             using var sha256 = SHA256.Create();

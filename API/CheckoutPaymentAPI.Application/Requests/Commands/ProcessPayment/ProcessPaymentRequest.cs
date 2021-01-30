@@ -1,4 +1,5 @@
-﻿using CheckoutPaymentAPI.Models.DTOs;
+﻿using CheckoutPaymentAPI.Models;
+using CheckoutPaymentAPI.Models.DTOs;
 using MediatR;
 using System;
 
@@ -7,7 +8,7 @@ namespace CheckoutPaymentAPI.Application.Requests.Commands.ProcessPayment
     /// <summary>
     /// Represents a new payment to be processed
     /// </summary>
-    public class ProcessPaymentRequest : IRequest<ProcessPaymentResponseDTO>
+    public class ProcessPaymentRequest : IRequest<Either<ProcessPaymentResponseDTO, ErrorResponseDTO>>
     {
         /// <summary>
         /// Gets or sets the card long number used in the payment
@@ -16,7 +17,7 @@ namespace CheckoutPaymentAPI.Application.Requests.Commands.ProcessPayment
         /// <summary>
         /// Gets or sets the expiry date of the card used in the payment
         /// </summary>
-        public DateTime Expiry { get; set; }
+        public MonthYear Expiry { get; set; }
         /// <summary>
         /// Gets or sets the decimal amount of this payment
         /// </summary>

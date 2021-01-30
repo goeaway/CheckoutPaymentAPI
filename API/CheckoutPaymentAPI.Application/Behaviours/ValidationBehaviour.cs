@@ -1,6 +1,7 @@
-﻿using CheckoutPaymentAPI.Application.Exceptions;
+﻿using CheckoutPaymentAPI.Models.DTOs;
 using FluentValidation;
 using MediatR;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,15 +16,18 @@ namespace CheckoutPaymentAPI.Application.Behaviours
     /// <typeparam name="TRequest"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
     public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+        where TResponse : class
     {
         private readonly IEnumerable<IValidator<TRequest>> _validators;
+        private readonly ILogger _logger;
 
-        public ValidationBehaviour(IEnumerable<IValidator<TRequest>> validators)
+        public ValidationBehaviour(IEnumerable<IValidator<TRequest>> validators, ILogger logger)
         {
             _validators = validators;
+            _logger = logger;
         }
 
-        public Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken,
+        public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken,
             RequestHandlerDelegate<TResponse> next)
         {
             var ctx = new ValidationContext<TRequest>(request);
@@ -34,13 +38,32 @@ namespace CheckoutPaymentAPI.Application.Behaviours
                 .Where(f => f != null)
                 .ToList();
 
-            // throw if there are failures. This exception is picked up by the app's error response handler
-            if (failures.Count != 0)
+            if (failures.Any())
             {
-                throw new RequestValidationFailedException(failures);
-            }
+                // log failure to logger
+                var requestName = typeof(TRequest).Name;
+                var errorCSV = string.Join(',', failures.Select(f => f.ErrorMessage));
+                _logger.Error("Validation error(s) occurred for request {RequestName}: {ErrorCSV}", requestName, errorCSV);
 
-            return next();
+                var responseType = typeof(TResponse);
+                // if response can handle an error flow then create an instance of the TResponse
+                if (responseType.IsGenericType)
+                {
+                    // we reflectively create an instance of the response type
+                    // we expect the response type to have a constructor that can take
+                    // the error response dto as sole parameter
+                    return Activator.CreateInstance(
+                            responseType,
+                            new ErrorResponseDTO
+                            {
+                                Errors = failures.Select(s => s.ErrorMessage),
+                                Message = "Validation error"
+                            }
+                        ) as TResponse;
+                }
+            }
+            // call the next stage of the request (this could be another pipeline bit or the actual request handler)
+            return await next();
         }
     }
 }

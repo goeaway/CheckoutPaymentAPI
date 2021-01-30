@@ -24,7 +24,7 @@ namespace CheckoutPaymentAPI.Client
         public async Task<ApiResponse<GetPaymentDetailsResponse>> GetPaymentDetails(int paymentId)
         {
             // make request using http client
-            var response = await _client.GetAsync($"/paymentdetails/{paymentId}");
+            var response = await _client.GetAsync($"/payments/{paymentId}");
 
             var clientResponse = new ApiResponse<GetPaymentDetailsResponse>
             {
@@ -50,7 +50,7 @@ namespace CheckoutPaymentAPI.Client
         public async Task<ApiResponse<ProcessPaymentResponse>> ProcessPayment(
             string cardNumber, 
             string cvv,
-            DateTime expiry, 
+            MonthYear expiry, 
             decimal amount, 
             string currency)
         {
@@ -78,7 +78,7 @@ namespace CheckoutPaymentAPI.Client
                 Currency = currency
             }), Encoding.UTF8, "application/json");
 
-            var response = await _client.PostAsync("/payments/process", content);
+            var response = await _client.PostAsync("/payments", content);
             
             var clientResponse = new ApiResponse<ProcessPaymentResponse>
             {

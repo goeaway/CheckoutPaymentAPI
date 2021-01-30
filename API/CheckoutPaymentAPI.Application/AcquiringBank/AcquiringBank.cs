@@ -22,7 +22,7 @@ namespace CheckoutPaymentAPI.Application.AcquiringBank
             // faked result
             return Task.Run(() => new AcquiringBankResponse
             {
-                Success = true,
+                Status = AcquiringBankResponseStatus.Success,
                 PaymentId = new Random().Next()
             });
         }

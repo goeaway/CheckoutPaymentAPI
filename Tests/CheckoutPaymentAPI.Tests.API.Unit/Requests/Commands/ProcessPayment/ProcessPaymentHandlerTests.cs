@@ -11,7 +11,8 @@ using CheckoutPaymentAPI.Core.Providers;
 using CheckoutPaymentAPI.Application.Requests.Commands.ProcessPayment;
 using CheckoutPaymentAPI.Application.AcquiringBank;
 using CheckoutPaymentAPI.Models.AcquiringBank;
-using CheckoutPaymentAPI.Application.Exceptions;
+using CheckoutPaymentAPI.Models;
+using System.Net;
 
 namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
 {
@@ -34,7 +35,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
             const string CURRENCY = "GBP";
             const string OWNER = "owner";
             const decimal AMOUNT = .1m;
-            var EXPIRY = new DateTime(2021, 01, 01);
+            var EXPIRY = new MonthYear { Year = 2021, Month = 01 };
 
             var testNow = new DateTime(2021, 02, 01);
             var nowProvider = new NowProvider(testNow);
@@ -54,7 +55,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
                 .Setup(mock => mock.SendPayment(It.IsAny<AcquiringBankRequest>()))
                 .ReturnsAsync(new AcquiringBankResponse
                 {
-                    Success = true,
+                    Status = AcquiringBankResponseStatus.Success,
                     PaymentId = RETURNED_PAYMENT_ID
                 });
 
@@ -78,7 +79,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
                 _logger,
                 _cachingOptions,
                 context);
-            var result = await handler.Handle(request, CancellationToken.None);
+            var result = (await handler.Handle(request, CancellationToken.None)).SuccessOrDefault;
 
             Assert.IsTrue(result.Success);
 
@@ -88,10 +89,12 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
             // should be masked
             Assert.AreEqual("************1111", foundPayment.CardNumber);
             Assert.AreEqual("***", foundPayment.CVV);
-            Assert.AreEqual(EXPIRY, foundPayment.Expiry);
             Assert.AreEqual(AMOUNT, foundPayment.Amount);
             Assert.AreEqual(CURRENCY, foundPayment.Currency);
             Assert.AreEqual(OWNER, foundPayment.Owner);
+
+            Assert.AreEqual(EXPIRY.Year, foundPayment.Expiry.Year);
+            Assert.AreEqual(EXPIRY.Month, foundPayment.Expiry.Month);
         }
 
         [TestMethod]
@@ -103,7 +106,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
             const string CURRENCY = "GBP";
             const string OWNER = "owner";
             const decimal AMOUNT = .1m;
-            var EXPIRY = new DateTime(2021, 01, 01);
+            var EXPIRY = new MonthYear { Year = 2021, Month = 01 };
 
             var testNow = new DateTime(2021, 02, 01);
             var nowProvider = new NowProvider(testNow);
@@ -125,7 +128,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
                 .Setup(mock => mock.SendPayment(It.IsAny<AcquiringBankRequest>()))
                 .ReturnsAsync(new AcquiringBankResponse
                 {
-                    Success = false,
+                    Status = AcquiringBankResponseStatus.Acquiring_Bank_Unreachable,
                     PaymentId = RETURNED_PAYMENT_ID
                 });
 
@@ -148,7 +151,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
                 _logger,
                 _cachingOptions,
                 context);
-            var result = await handler.Handle(request, CancellationToken.None);
+            var result = (await handler.Handle(request, CancellationToken.None)).SuccessOrDefault;
 
             // ensure payment is still saved in failed state
             var foundPayment = context.ProcessedPayments.Find(result.PaymentId);
@@ -158,10 +161,12 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
 
             Assert.AreEqual("************1111", foundPayment.CardNumber);
             Assert.AreEqual("***", foundPayment.CVV);
-            Assert.AreEqual(EXPIRY, foundPayment.Expiry);
             Assert.AreEqual(AMOUNT, foundPayment.Amount);
             Assert.AreEqual(CURRENCY, foundPayment.Currency);
             Assert.AreEqual(OWNER, foundPayment.Owner);
+
+            Assert.AreEqual(EXPIRY.Year, foundPayment.Expiry.Year);
+            Assert.AreEqual(EXPIRY.Month, foundPayment.Expiry.Month);
         }
  
         [TestMethod]
@@ -173,7 +178,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
             const string CURRENCY = "GBP";
             const string OWNER = "owner";
             const decimal AMOUNT = .1m;
-            var EXPIRY = new DateTime(2021, 01, 01);
+            var EXPIRY = new MonthYear { Year = 2021, Month = 01 };
 
             var testNow = new DateTime(2021, 02, 01);
             var nowProvider = new NowProvider(testNow);
@@ -193,7 +198,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
                 .Setup(mock => mock.SendPayment(It.IsAny<AcquiringBankRequest>()))
                 .ReturnsAsync(new AcquiringBankResponse
                 {
-                    Success = true,
+                    Status = AcquiringBankResponseStatus.Success,
                     PaymentId = RETURNED_PAYMENT_ID
                 });
 
@@ -228,14 +233,14 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
         }
 
         [TestMethod]
-        public async Task Throws_When_Cache_Already_Contains_Key()
+        public async Task Returns_Error_Response_When_Cache_Already_Contains_Key()
         {
             const string CARD_NUMBER = "4111111111111111";
             const string CVV = "123";
             const string CURRENCY = "GBP";
             const string OWNER = "owner";
             const decimal AMOUNT = .1m;
-            var EXPIRY = new DateTime(2021, 01, 01);
+            var EXPIRY = new MonthYear { Year = 2021, Month = 01 };
 
             var testNow = new DateTime(2021, 02, 01);
             var nowProvider = new NowProvider(testNow);
@@ -267,22 +272,21 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
                 _cachingOptions,
                 context);
 
-            await Assert
-                .ThrowsExceptionAsync<RequestFailedException>(
-                    () => handler.Handle(request, CancellationToken.None));
+            var result = (await handler.Handle(request, CancellationToken.None)).ErrorOrDefault;
+            Assert.AreEqual(HttpStatusCode.TooManyRequests, result.StatusCode);
         }
 
         [TestMethod]
         public async Task Adds_Key_To_Cache()
         {
-            const string GENERATED_REQUEST_KEY = "NxksOI06dqKBd1Dqrb8QaGP3n4aw9NDOXxPlTnXx8sQ=";
+            const string GENERATED_REQUEST_KEY = "1v9ESIpTOJ1czY9SZW5oWf2DiRWrNOB4kHdPFODIYjI=";
             const int RETURNED_PAYMENT_ID = 1;
             const string CARD_NUMBER = "4111111111111111";
             const string CVV = "123";
             const string CURRENCY = "GBP";
             const string OWNER = "owner";
             const decimal AMOUNT = .1m;
-            var EXPIRY = new DateTime(2021, 01, 01);
+            var EXPIRY = new MonthYear { Year = 2021, Month = 01 };
 
             var testNow = new DateTime(2021, 02, 01);
             var nowProvider = new NowProvider(testNow);
@@ -302,7 +306,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
                 .Setup(mock => mock.SendPayment(It.IsAny<AcquiringBankRequest>()))
                 .ReturnsAsync(new AcquiringBankResponse
                 {
-                    Success = true,
+                    Status = AcquiringBankResponseStatus.Success,
                     PaymentId = RETURNED_PAYMENT_ID
                 });
 
