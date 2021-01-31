@@ -39,7 +39,7 @@ namespace CheckoutPaymentAPI.Application.Requests.Commands.ProcessPayment
                     .WithMessage("Expiry month must be between 1 and 12");
 
                 RuleFor(x => x.Expiry)
-                    .Must(x => new DateTime(x.Year, x.Month, 1).AddMonths(1).AddDays(-1) > nowProvider.Now)
+                    .Must(x => new DateTime(x.Year, x.Month, 1).AddMonths(1).AddDays(-1) >= nowProvider.Now.Date)
                     .When(x => x.Expiry.Year > 0 && x.Expiry.Month > 0 && x.Expiry.Month < 13)
                     .WithMessage("Expiry invalid");
             });

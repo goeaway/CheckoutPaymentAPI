@@ -299,7 +299,7 @@ namespace CheckoutPaymentAPI.Tests.Requests.Commands.ProcessPayment
         [TestMethod]
         public void Passes_Same_Month_Expiry()
         {
-            var testNow = new DateTime(2021, 01, 01);
+            var testNow = new DateTime(2021, 01, 31);
 
             var request = new ProcessPaymentRequest
             {
