@@ -53,6 +53,37 @@ namespace CheckoutPaymentAPI.Tests.Client
         }
 
         [TestMethod]
+        public async Task ProcessPayment_Returns_400_For_Validation_Failure()
+        {
+            const decimal AMOUNT = .1m;
+            const string CARD_NUMBER = "4111111111111111";
+            const string CVV = "123";
+            const string CURRENCY = "GBP";
+            var testNow = new DateTime(2021, 01, 01);
+            var expiryDate = testNow.AddSeconds(-1);
+            var EXPIRY = new MonthYear(expiryDate.Month, expiryDate.Year);
+
+            var (_, client, _) = Setup.CreateServer(new Setup.CreateServerOptions
+            {
+                TestNow = testNow
+            });
+
+            var apiClient = new ApiClient(client, API_KEY);
+
+            var response = await apiClient.ProcessPayment(
+                CARD_NUMBER,
+                CVV,
+                EXPIRY,
+                AMOUNT,
+                CURRENCY
+            );
+
+            Assert.AreEqual(400, (int)response.StatusCode);
+            Assert.IsNull(response.Data);
+            Assert.IsNotNull(response.Error);
+        }
+
+        [TestMethod]
         public async Task ProcessPayment_Failed_Requests_Dont_Throw()
         {
             const decimal AMOUNT = .1m;
