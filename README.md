@@ -7,7 +7,7 @@ The project consists of an ASPNET Core web api, running on .net core 3.1, and a 
 ## Feedback changes
 
 Some feedback points and what I did below:
-* Card number validation should not be delegated - For this I implemented my own Luhn algorithm in the validator to ensure card numbers are correct
+* Card number validation should not be delegated - For this I implemented a Luhn algorithm in the validator to ensure card numbers are correct
 * CVV should only allow digits - This was an oversight before and has been rectified by adding more validation rules for the CVV
 * Amount should be positive - I had originally assumed that a negative amount would be okay, but I've changed the API to only allow positive values
 * Expiry should be month/year only - I originally used a DateTime object but after feedback I've changed this to be an object with month and year integer properties
